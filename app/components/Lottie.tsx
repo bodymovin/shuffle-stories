@@ -10,6 +10,7 @@ interface LottieComponentProps {
   loop?: boolean,
   autoplay?: boolean,
   renderer: LottieRenderer,
+  onComplete: () => void,
 }
 
 function getConfig(props: LottieComponentProps, container: any): AnimationConfigWithPath | AnimationConfigWithData | null {
@@ -35,6 +36,8 @@ function getConfig(props: LottieComponentProps, container: any): AnimationConfig
 }
 
 function LottieComponent(props: LottieComponentProps) {
+
+  const {onComplete} = props
   
   const containerElem = useRef(null)
   const containerAnimation = useRef<AnimationItem | null>(null)
@@ -48,6 +51,7 @@ function LottieComponent(props: LottieComponentProps) {
       if (config) {
         
         containerAnimation.current = Lottie.loadAnimation(config)
+        containerAnimation.current.addEventListener('complete', onComplete)
       }
     }
     console.log(containerElem.current);

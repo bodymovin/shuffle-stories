@@ -1,12 +1,19 @@
 import Lottie from '~/components/lottie';
 import {loadJson} from '~/helpers/fileLoader.server';
-import { useLoaderData, useFetcher } from "remix";
+import { useLoaderData, useFetcher, useNavigate } from "remix";
 import type { LoaderFunction } from "remix";
 import { convertColors } from '~/helpers/animationTransformer.server';
 import { useEffect } from 'react';
 import { getColorsFromCookie } from '~/helpers/colorParser';
+import { ColorSet } from '~/interfaces/colors';
 
-export const loader: LoaderFunction = async ({request}) => {
+
+interface UserLoaderData {
+  colors: ColorSet
+  animation: string
+}
+
+export const loader: LoaderFunction = async ({request}):Promise<UserLoaderData> => {
   const animationData = await loadJson('animations/animation.json');
   const convertedAnimation = convertColors(animationData)
   return {
@@ -17,8 +24,9 @@ export const loader: LoaderFunction = async ({request}) => {
 
 function Splash() {
 
-  const {animation, colors} = useLoaderData()
+  const {animation, colors} = useLoaderData<UserLoaderData>()
   const fetcher = useFetcher()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (fetcher.data) {
@@ -28,6 +36,10 @@ function Splash() {
       root.style.setProperty('--color-3', fetcher.data.color3);
     }
   }, [fetcher])
+
+  const onComplete = () => {
+    navigate('/navigation')
+  }
 
   return (
     <>
@@ -39,10 +51,11 @@ function Splash() {
         <input type="submit" />
       </fetcher.Form>
       <Lottie
-        loop={true}
+        loop={false}
         autoplay={true}
         animationString={animation}
         renderer={'svg'}
+        onComplete={onComplete}
       />
     </>
   )

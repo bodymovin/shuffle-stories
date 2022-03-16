@@ -12,6 +12,7 @@ import type { MetaFunction } from "remix";
 import styles from '~/styles/global.css'
 import { useLoaderData } from "remix";
 import { getColorsFromCookie } from "./helpers/colorParser";
+import { ColorSet } from "./interfaces/colors";
 
 export const meta: MetaFunction = () => {
   return { title: "Shuffle Stories" };
@@ -21,8 +22,11 @@ export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: styles }];
 }
 
+interface UserData {
+  colors: ColorSet
+}
 
-export const loader: LoaderFunction = async ({request}) => {
+export const loader: LoaderFunction = async ({request}):Promise<UserData> => {
   return {
     colors: await getColorsFromCookie(request),
   }
@@ -30,7 +34,7 @@ export const loader: LoaderFunction = async ({request}) => {
 
 export default function App() {
 
-  const {colors} = useLoaderData()
+  const {colors} = useLoaderData<UserData>()
   if (typeof document !== "undefined") {
     const root = document.documentElement;
     root.style.setProperty('--color-1', colors.color1);
