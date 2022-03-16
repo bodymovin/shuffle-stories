@@ -1,0 +1,20 @@
+:root {
+  --color-1: #009900;
+  --color-2: #999900;
+  --color-3: #990099;
+}
+
+path.anim-color-1 {
+  fill: var(--color-1);
+  stroke: var(--color-1);
+}
+
+path.anim-color-2 {
+  fill: var(--color-2);
+  stroke: var(--color-2);
+}
+
+path.anim-color-3 {
+  fill: var(--color-3);
+  stroke: var(--color-3);
+}
