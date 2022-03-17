@@ -1,4 +1,4 @@
-import Lottie from '~/components/lottie';
+import Lottie from '~/components/Lottie';
 import {loadJson} from '~/helpers/fileLoader.server';
 import { useLoaderData, useFetcher, useNavigate } from "remix";
 import type { LoaderFunction } from "remix";
@@ -38,7 +38,7 @@ function Splash() {
   }, [fetcher])
 
   const onComplete = () => {
-    navigate('/navigation')
+    navigate('/selection/character')
   }
 
   return (

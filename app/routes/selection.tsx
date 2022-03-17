@@ -1,5 +1,15 @@
-import { json, LoaderFunction } from "remix";
+import { json, LoaderFunction, Outlet } from "remix";
 import { updateUserPrefs } from "~/cookies";
+import styles from "~/styles/selection.css";
+
+export function links() {
+  return [
+    {
+      rel: "stylesheet",
+      href: styles
+    }
+  ]
+}
 
 export const loader: LoaderFunction = async ({request}): Promise<any> => {
   const serializedCookie = await updateUserPrefs(request, {visitedSplash: true})
@@ -15,8 +25,6 @@ export const loader: LoaderFunction = async ({request}): Promise<any> => {
 
 export default function Navigation() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Navigation</h1>
-    </div>
+    <Outlet />
   );
 }
