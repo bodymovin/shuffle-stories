@@ -25,6 +25,21 @@
 
 .footer {
   flex: 0 0 auto;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+}
+
+.footer__chapter-button {
+  width: 100px;
+  height: 100px;
+  background: none;
+  border: none;
+  margin: calc(var(--grid-unit) * 2);
+}
+
+.footer__chapter-button--selected {
+  background-color: var(--color-1);
 }
 
 .story-radio-input {

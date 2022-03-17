@@ -1,6 +1,6 @@
 import Lottie from "lottie-web/build/player/lottie_worker"
 import type {AnimationItem, AnimationConfigWithPath, AnimationConfigWithData} from 'lottie-web/build/player/lottie'
-import { useEffect, useLayoutEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 
 type LottieRenderer = 'svg'
 
@@ -56,7 +56,7 @@ function LottieComponent(props: LottieComponentProps) {
         }
       }
     }
-  }, [props.path, props.loop, props.renderer, onComplete])
+  }, [props.animationString, props.path])
   
   return (
     <div

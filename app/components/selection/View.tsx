@@ -1,6 +1,70 @@
-import { Form, useLoaderData, Link, useLocation } from "remix"
-import { buildHash } from "~/helpers/hash"
-import LottieComponent from "../Lottie"
+import { Form, useLoaderData, Link, useLocation } from 'remix'
+import { ChapterPaths, Chapters } from '~/helpers/animationData'
+import { buildHash } from '~/helpers/hash'
+import { SelectionUserData } from '~/helpers/selection/loaderFunction'
+import LottieComponent from '../Lottie'
+
+interface ChapterNavigation {
+  id: Chapters
+  path: string
+  name: string
+  animationPath?:string
+}
+
+function buildChaptersNavigation(chapterPaths: ChapterPaths, currentChapter: Chapters) {
+  const chapters: ChapterNavigation[] = [
+    {
+      id: 'character',
+      path: 'character',
+      name: 'Character',
+    },
+    {
+      id: 'partner',
+      path: 'partner',
+      name: 'Partner',
+    },
+    {
+      id: 'object',
+      path: 'object',
+      name: 'Object',
+    },
+    {
+      id: 'vehicle',
+      path: 'vehicle',
+      name: 'Vehicle',
+    },
+    {
+      id: 'path',
+      path: 'path',
+      name: 'Path',
+    },
+    {
+      id: 'destination',
+      path: 'destination',
+      name: 'Destination',
+    }
+  ]
+  return chapters.map((chapter) => {
+    return (
+      <button
+        key={chapter.id}
+        type='submit'
+        name='redirect'
+        className={`footer__chapter-button ${currentChapter === chapter.id ? 'footer__chapter-button--selected' : '' }`}
+        value={chapter.path}
+      >
+        <LottieComponent
+          loop={false}
+          autoplay={true}
+          path={chapterPaths[chapter.id]}
+          renderer={'svg'}
+          className={''}
+        />
+      </button>
+    )
+  })
+  
+}
 
 function View() {
   const options = [
@@ -25,14 +89,14 @@ function View() {
       name: 'e'
     }
   ]
-  const {animation} = useLoaderData<any>()
+  const {animation, chapterPaths, currentChapter} = useLoaderData<SelectionUserData>()
 
   const { hash } = useLocation()
 
   return (
     <>
       <Form
-        method="post"
+        method='post'
         action='/selection/character'
         className='wrapper'
       >
@@ -96,9 +160,7 @@ function View() {
           <footer
             className='footer'
           >
-            <button type="submit" name="redirect" value="character" >Character</button>
-            <button type="submit" name="redirect" value="companion" >Companion</button>
-            <button type="submit" name="redirect" value="vehicle" >Vehicle</button>
+            {buildChaptersNavigation(chapterPaths, currentChapter)}
           </footer>
         </article>
       </Form>
