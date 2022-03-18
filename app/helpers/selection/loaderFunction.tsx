@@ -1,5 +1,7 @@
 import { LoaderFunction } from "remix";
-import { ChapterPaths, Chapters, getSelectionChapterButtons, getSelectionChapterForStory } from "../animationData";
+import { ChapterToContent, Chapters } from "~/interfaces/chapters";
+import { getSelectionChapterButtons, getSelectionChapterForStory } from "../animationData";
+import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from "../textData";
 
 const getChapterFromPath = (path: string): Chapters => {
   const partParts = path.split('/')
@@ -10,7 +12,9 @@ const getChapterFromPath = (path: string): Chapters => {
 export interface SelectionUserData {
   animation: string
   currentChapter: Chapters
-  chapterPaths: ChapterPaths
+  chapterPaths: ChapterToContent
+  title: string
+  subtitle: string
 }
 
 export const loader: LoaderFunction = async ({request}):Promise<SelectionUserData> => {
@@ -21,5 +25,7 @@ export const loader: LoaderFunction = async ({request}):Promise<SelectionUserDat
     animation: JSON.stringify(animation),
     currentChapter: chapter,
     chapterPaths: await getSelectionChapterButtons(),
+    title: await getSelectionTitleByChapter(chapter),
+    subtitle: await getSelectionSubTitleByChapter(chapter),
   }
 }

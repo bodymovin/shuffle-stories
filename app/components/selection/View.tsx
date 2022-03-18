@@ -1,7 +1,7 @@
 import { Form, useLoaderData, Link, useLocation } from 'remix'
-import { ChapterPaths, Chapters } from '~/helpers/animationData'
 import { buildHash } from '~/helpers/hash'
 import { SelectionUserData } from '~/helpers/selection/loaderFunction'
+import { ChapterToContent, Chapters } from '~/interfaces/chapters'
 import LottieComponent from '../Lottie'
 import ChapterButton from './ChapterButton'
 
@@ -12,7 +12,7 @@ export interface ChapterNavigation {
   animationPath?:string
 }
 
-function buildChaptersNavigation(chapterPaths: ChapterPaths, currentChapter: Chapters) {
+function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter: Chapters) {
   const chapters: ChapterNavigation[] = [
     {
       id: 'character',
@@ -81,7 +81,7 @@ function View() {
       name: 'e'
     }
   ]
-  const {animation, chapterPaths, currentChapter} = useLoaderData<SelectionUserData>()
+  const {animation, chapterPaths, currentChapter, title, subtitle} = useLoaderData<SelectionUserData>()
 
   const { hash } = useLocation()
 
@@ -98,8 +98,8 @@ function View() {
           <header
             className='header'
           >
-            <h1>character</h1>
-            <h2>character</h2>
+            <h1 className='header--title'>{title}</h1>
+            <h2 className='header--subtitle'>{subtitle}</h2>
           </header>
           <main
             className='main'
@@ -122,6 +122,10 @@ function View() {
               <div
                 className='story-container'
               >
+                {/* <svg width="1500" height="1500" viewBox="0 0 1500 1500" style={{width: '100%', height: '100%', background: 'rgba(0,127,0,0.5)'}}>
+
+                </svg> */}
+                {/* <img src="https://www.mickeyshannon.com/photos/landscape-photography.jpg" style={{width: '100%', height: '100%', background: 'rgba(0,127,0,0.5)'}} /> */}
                 {options.map((option, index) => {
                   return (
                     <label
@@ -143,7 +147,7 @@ function View() {
                       />
                     </label>
                   )
-                })}
+                  })}
               </div>
               <Link to={buildHash(options.length, 1, 'story-selection-', hash)} className='story-navigation story-navigation--right'>
 

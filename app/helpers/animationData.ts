@@ -1,3 +1,4 @@
+import { ChapterToContent, Chapters } from "~/interfaces/chapters";
 import { convertColors } from "./animationTransformer.server";
 import { loadJson } from "./fileLoader.server";
 
@@ -5,18 +6,7 @@ export interface AnimationData {
   nm: string
 }
 
-export interface ChapterPaths {
-  character: string
-  partner: string
-  object: string
-  vehicle: string
-  path: string
-  destination: string
-}
-
-export type Chapters = 'character' | 'partner' | 'object' | 'vehicle' | 'path' | 'destination'
-
-const selectionChapterMap: ChapterPaths = {
+const selectionChapterMap: ChapterToContent = {
   'character': 'character_selection.json',
   'partner': 'partner_selection.json',
   'object': 'object_selection.json',
@@ -25,7 +15,7 @@ const selectionChapterMap: ChapterPaths = {
   'destination': 'destination_selection.json',
 }
 
-export const getSelectionChapterButtons = async (): Promise<ChapterPaths> => {
+export const getSelectionChapterButtons = async (): Promise<ChapterToContent> => {
   return {
     'character': `/routed/assets/selection/Adventurer.json`,
     'partner': '/routed/assets/selection/Partner.json',

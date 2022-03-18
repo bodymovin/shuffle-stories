@@ -10,16 +10,21 @@ import {
 } from "remix";
 import type { MetaFunction } from "remix";
 import styles from '~/styles/global.css'
+import menuStyles from '~/styles/menu.css'
 import { useLoaderData } from "remix";
 import { getColorsFromCookie } from "./helpers/colorParser";
 import { ColorSet } from "./interfaces/colors";
+import Menu from "./components/menu/Menu";
 
 export const meta: MetaFunction = () => {
   return { title: "Shuffle Stories" };
 };
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: styles }];
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: menuStyles },
+  ];
 }
 
 interface UserData {
@@ -52,6 +57,7 @@ export default function App() {
       </head>
       <body>
         <Outlet />
+        <Menu colors={colors}/>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
