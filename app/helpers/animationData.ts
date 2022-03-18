@@ -27,16 +27,16 @@ const selectionChapterMap: ChapterPaths = {
 
 export const getSelectionChapterButtons = async (): Promise<ChapterPaths> => {
   return {
-    'character': '/assets/selection/Adventurer.json',
-    'partner': '/assets/selection/Partner.json',
-    'object': '/assets/selection/Object.json',
-    'vehicle': '/assets/selection/Vehicle.json',
-    'path': '/assets/selection/Path.json',
-    'destination': '/assets/selection/Destiny.json',
+    'character': `/routed/assets/selection/Adventurer.json`,
+    'partner': '/routed/assets/selection/Partner.json',
+    'object': '/routed/assets/selection/Object.json',
+    'vehicle': '/routed/assets/selection/Vehicle.json',
+    'path': '/routed/assets/selection/Path.json',
+    'destination': '/routed/assets/selection/Destiny.json',
   }
 }
 
-const loadAnimation = async (path: string): Promise<AnimationData> => {
+export const loadAnimation = async (path: string): Promise<AnimationData> => {
   const animationData = await loadJson(path);
   const convertedAnimation = convertColors(animationData)
   return convertedAnimation

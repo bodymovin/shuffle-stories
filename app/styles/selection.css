@@ -28,6 +28,7 @@
   height: 150px;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .footer__chapter-button {
@@ -36,6 +37,8 @@
   background: none;
   border: none;
   margin: calc(var(--grid-unit) * 2);
+  cursor: pointer;
+  padding: 0;
 }
 
 .footer__chapter-button--selected {

@@ -12,6 +12,7 @@ interface LottieComponentProps {
   renderer: LottieRenderer,
   onComplete?: () => void,
   className?: string
+  direction?: 1 | -1
 }
 
 function getConfig(props: LottieComponentProps, container: any): AnimationConfigWithPath | AnimationConfigWithData | null {
@@ -42,6 +43,12 @@ function LottieComponent(props: LottieComponentProps) {
   const containerElem = useRef(null)
   const containerAnimation = useRef<AnimationItem | null>(null)
 
+  const onDomLoaded = () => {
+    if (containerAnimation.current && props.direction) {
+      containerAnimation.current.setDirection(props.direction)
+    }
+  }
+
   useEffect(() => {
     if (containerElem.current) {
       if (containerAnimation.current) {
@@ -54,9 +61,17 @@ function LottieComponent(props: LottieComponentProps) {
         if (onComplete) {
           containerAnimation.current.addEventListener('complete', onComplete)
         }
+        containerAnimation.current.addEventListener('DOMLoaded', onDomLoaded)
       }
     }
   }, [props.animationString, props.path])
+
+  useEffect(() => {
+    if (containerAnimation.current && props.direction) {
+      containerAnimation.current.setDirection(props.direction)
+      containerAnimation.current.play()
+    }
+  }, [props.direction])
   
   return (
     <div

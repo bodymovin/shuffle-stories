@@ -3,8 +3,9 @@ import { ChapterPaths, Chapters } from '~/helpers/animationData'
 import { buildHash } from '~/helpers/hash'
 import { SelectionUserData } from '~/helpers/selection/loaderFunction'
 import LottieComponent from '../Lottie'
+import ChapterButton from './ChapterButton'
 
-interface ChapterNavigation {
+export interface ChapterNavigation {
   id: Chapters
   path: string
   name: string
@@ -46,21 +47,12 @@ function buildChaptersNavigation(chapterPaths: ChapterPaths, currentChapter: Cha
   ]
   return chapters.map((chapter) => {
     return (
-      <button
+      <ChapterButton
         key={chapter.id}
-        type='submit'
-        name='redirect'
-        className={`footer__chapter-button ${currentChapter === chapter.id ? 'footer__chapter-button--selected' : '' }`}
-        value={chapter.path}
-      >
-        <LottieComponent
-          loop={false}
-          autoplay={true}
-          path={chapterPaths[chapter.id]}
-          renderer={'svg'}
-          className={''}
-        />
-      </button>
+        chapter={chapter}
+        currentChapter={currentChapter}
+        path={chapterPaths[chapter.id]}
+      />
     )
   })
   

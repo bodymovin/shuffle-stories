@@ -16,7 +16,7 @@ const iterateShapes = (shapes: any[]) => {
       } else if (shape.c.k[0] === 0.952999997606 && shape.c.k[1] === 0.905999995213  && shape.c.k[2] === 0.842999985639) {
         shape.cl = 'anim-color-3'
       } else {
-        console.log(shape.c.k)
+        // console.log(shape.c.k)
       }
     }
   })

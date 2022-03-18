@@ -6,6 +6,7 @@ import { convertColors } from '~/helpers/animationTransformer.server';
 import { useEffect } from 'react';
 import { getColorsFromCookie } from '~/helpers/colorParser';
 import { ColorSet } from '~/interfaces/colors';
+import { loadAnimation } from '~/helpers/animationData';
 
 
 interface UserLoaderData {
@@ -14,10 +15,10 @@ interface UserLoaderData {
 }
 
 export const loader: LoaderFunction = async ({request}):Promise<UserLoaderData> => {
-  const animationData = await loadJson('animations/animation.json');
-  const convertedAnimation = convertColors(animationData)
+
+  const animationData = await loadAnimation('assets/title/data.json')
   return {
-    animation: JSON.stringify(convertedAnimation),
+    animation: JSON.stringify(animationData),
     colors: await getColorsFromCookie(request),
   }
 }
@@ -43,7 +44,6 @@ function Splash() {
 
   return (
     <>
-      <div>splash</div>
       <fetcher.Form  method="post" action="/color" >
         <input type="color" name="color1" defaultValue={colors.color1} />
         <input type="color" name="color2" defaultValue={colors.color2}/>
