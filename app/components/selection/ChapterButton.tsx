@@ -1,4 +1,4 @@
-import { Chapters } from "~/helpers/animationData"
+import { Chapters } from "~/interfaces/chapters"
 import LottieComponent from "../Lottie"
 import { ChapterNavigation } from "./View"
 

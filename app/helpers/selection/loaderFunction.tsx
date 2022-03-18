@@ -1,31 +1,44 @@
 import { LoaderFunction } from "remix";
 import { ChapterToContent, Chapters } from "~/interfaces/chapters";
-import { getSelectionChapterButtons, getSelectionChapterForStory } from "../animationData";
+import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from "../animationData";
+import { getStories, getUserStoryForChapterFromRequest, SelectionStory } from "../story";
 import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from "../textData";
 
-const getChapterFromPath = (path: string): Chapters => {
+export const getChapterFromRequest = (request: Request): Chapters => {
+  const urlData = new URL(request.url)
+  const path = urlData.pathname
   const partParts = path.split('/')
   // TODO: improve this
   return partParts[partParts.length - 1] as Chapters
 }
 
 export interface SelectionUserData {
-  animation: string
   currentChapter: Chapters
+  selectedStory: string
   chapterPaths: ChapterToContent
   title: string
   subtitle: string
+  stories: SelectionStory[]
 }
 
 export const loader: LoaderFunction = async ({request}):Promise<SelectionUserData> => {
-  const urlData = new URL(request.url)
-  const chapter = getChapterFromPath(urlData.pathname)
-  const animation = await getSelectionChapterForStory('1', chapter)
+  const chapter = getChapterFromRequest(request)
+  const selectedStory = await getUserStoryForChapterFromRequest(chapter, request)
+  const stories = await Promise.all((
+    await getStories())
+    .map(async story => {
+      return {
+        ...story,
+        path: selectedStory === story.id ? '' : (await getSelectionChapterPathForStory(story.id, chapter)),
+        animation: selectedStory === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.id, chapter)) : '',
+      }
+  }))
   return {
-    animation: JSON.stringify(animation),
     currentChapter: chapter,
     chapterPaths: await getSelectionChapterButtons(),
     title: await getSelectionTitleByChapter(chapter),
     subtitle: await getSelectionSubTitleByChapter(chapter),
+    selectedStory,
+    stories,
   }
 }

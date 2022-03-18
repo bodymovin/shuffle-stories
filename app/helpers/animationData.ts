@@ -32,6 +32,10 @@ export const loadAnimation = async (path: string): Promise<AnimationData> => {
   return convertedAnimation
 }
 
-export const getSelectionChapterForStory = async (story: string, chapter: Chapters): Promise<AnimationData> => {
+export const getSelectionChapterAnimationForStory = async (story: string, chapter: Chapters): Promise<AnimationData> => {
   return await loadAnimation(`assets/story/${story}/${selectionChapterMap[chapter]}`)
+}
+
+export const getSelectionChapterPathForStory = async (story: string, chapter: Chapters): Promise<string> => {
+  return `/routed/assets/story/${story}/${selectionChapterMap[chapter]}`
 }

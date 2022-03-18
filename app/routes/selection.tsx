@@ -13,7 +13,6 @@ export function links() {
 
 export const loader: LoaderFunction = async ({request}): Promise<any> => {
   const serializedCookie = await updateUserPrefs(request, {visitedSplash: true})
-  request.headers.set("Cookie", serializedCookie)
   return json({ 
     ok: true,
   }, {

@@ -5,6 +5,12 @@ export interface UserPrefs {
   color1?: string,
   color2?: string,
   color3?: string,
+  character?: string
+  partner?: string
+  object?: string
+  vehicle?: string
+  path?: string
+  destination?: string
 }
 
 export const userPrefs = createCookie("user-prefs", {

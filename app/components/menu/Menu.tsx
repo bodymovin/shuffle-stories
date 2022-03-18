@@ -73,6 +73,7 @@ function buildClipPath() {
   while( i < 50 / rectWidth) {
     rects.push(
       <rect
+        key={i}
         x={i*rectWidth}
         y={-rectWidth / 2}
         width={rectWidth}

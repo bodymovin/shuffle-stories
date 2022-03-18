@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Form, useLoaderData, Link, useLocation } from 'remix'
 import { buildHash } from '~/helpers/hash'
 import { SelectionUserData } from '~/helpers/selection/loaderFunction'
@@ -16,32 +17,32 @@ function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter:
   const chapters: ChapterNavigation[] = [
     {
       id: 'character',
-      path: 'character',
+      path: 'character#story-selection-2',
       name: 'Character',
     },
     {
       id: 'partner',
-      path: 'partner',
+      path: 'partner#story-selection-2',
       name: 'Partner',
     },
     {
       id: 'object',
-      path: 'object',
+      path: 'object#story-selection-2',
       name: 'Object',
     },
     {
       id: 'vehicle',
-      path: 'vehicle',
+      path: 'vehicle#story-selection-2',
       name: 'Vehicle',
     },
     {
       id: 'path',
-      path: 'path',
+      path: 'path#story-selection-2',
       name: 'Path',
     },
     {
       id: 'destination',
-      path: 'destination',
+      path: 'destination#story-selection-2',
       name: 'Destination',
     }
   ]
@@ -59,37 +60,21 @@ function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter:
 }
 
 function View() {
-  const options = [
-    {
-      id: '1',
-      name: 'a'
-    },
-    {
-      id: '2',
-      name: 'b'
-    },
-    {
-      id: '3',
-      name: 'c'
-    },
-    {
-      id: '4',
-      name: 'd'
-    },
-    {
-      id: '5',
-      name: 'e'
-    }
-  ]
-  const {animation, chapterPaths, currentChapter, title, subtitle} = useLoaderData<SelectionUserData>()
 
-  const { hash } = useLocation()
+  const {chapterPaths, currentChapter, title, subtitle, selectedStory, stories} = useLoaderData<SelectionUserData>()
+
+  const location = useLocation()
+  const hash = location.hash
+
+  useEffect(() => {
+    console.log(hash)
+  }, [])
 
   return (
     <>
       <Form
         method='post'
-        action='/selection/character'
+        action={`/selection/${currentChapter}`}
         className='wrapper'
       >
         <article
@@ -104,52 +89,51 @@ function View() {
           <main
             className='main'
           >
-              {options.map(option => {
-                return (
-                  <input
-                    className='story-radio-input'
-                    key={option.id}
-                    type='radio'
-                    id={`radio_${option.id}`}
-                    name='story'
-                    value={option.id}
-                  />
-                )
-              })}
-              <Link to={buildHash(options.length, -1, 'story-selection-', hash)} className='story-navigation story-navigation--left'>
+              <Link to={buildHash(stories.length, -1, 'story-selection-', hash)} className='story-navigation story-navigation--left'>
 
               </Link>
               <div
                 className='story-container'
+                key={currentChapter}
               >
-                {/* <svg width="1500" height="1500" viewBox="0 0 1500 1500" style={{width: '100%', height: '100%', background: 'rgba(0,127,0,0.5)'}}>
-
-                </svg> */}
-                {/* <img src="https://www.mickeyshannon.com/photos/landscape-photography.jpg" style={{width: '100%', height: '100%', background: 'rgba(0,127,0,0.5)'}} /> */}
-                {options.map((option, index) => {
+                {stories.map((story, index) => {
                   return (
-                    <label
-                      htmlFor={`radio_${option.id}`}
-                      key={option.id}
-                      className={'story'}
-                      id={`story-selection-${index}`}
-                    >
-                      <div
-                        className='story__border'
-                      >
-                      </div>
-                      <LottieComponent
-                        loop={false}
-                        autoplay={true}
-                        animationString={animation}
-                        renderer={'svg'}
-                        className={'story__animation'}
+                    <>
+                      <input
+                        className='story-radio-input'
+                        key={`${story.id}__input`}
+                        type='radio'
+                        id={`radio_${story.id}`}
+                        name='story'
+                        value={story.id}
+                        defaultChecked={selectedStory === story.id}
                       />
-                    </label>
+                      <label
+                        htmlFor={`radio_${story.id}`}
+                        key={`${story.id}__label`}
+                        className={'story'}
+                        id={`story-selection-${index}`}
+                      >
+                        <div className='story__container'>
+                          <div
+                            className='story__container__border'
+                          >
+                          </div>
+                          <LottieComponent
+                            loop={false}
+                            autoplay={true}
+                            path={story.path}
+                            animationString={story.animation}
+                            renderer={'svg'}
+                            className={'story__container__animation'}
+                          />
+                        </div>
+                      </label>
+                    </>
                   )
                   })}
               </div>
-              <Link to={buildHash(options.length, 1, 'story-selection-', hash)} className='story-navigation story-navigation--right'>
+              <Link to={buildHash(stories.length, 1, 'story-selection-', hash)} className='story-navigation story-navigation--right'>
 
               </Link>
           </main>
