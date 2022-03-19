@@ -23,7 +23,6 @@ export const action: ActionFunction = async ({request}) => {
     const serializedCookie = await setUserStory(storyChapter, request)
     headers['Set-Cookie'] = serializedCookie
   }
-  console.log('body.redirect', body.redirect)
   return redirect(`selection/${body.redirect}`, {
     headers: headers,
   })

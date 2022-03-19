@@ -14,7 +14,7 @@ export const getChapterFromRequest = (request: Request): Chapters => {
 
 export interface SelectionUserData {
   currentChapter: Chapters
-  selectedStory: string
+  selectedStoryId: string
   chapterPaths: ChapterToContent
   title: string
   subtitle: string
@@ -23,14 +23,14 @@ export interface SelectionUserData {
 
 export const loader: LoaderFunction = async ({request}):Promise<SelectionUserData> => {
   const chapter = getChapterFromRequest(request)
-  const selectedStory = await getUserStoryForChapterFromRequest(chapter, request)
+  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request)
   const stories = await Promise.all((
     await getStories())
     .map(async story => {
       return {
         ...story,
-        path: selectedStory === story.id ? '' : (await getSelectionChapterPathForStory(story.id, chapter)),
-        animation: selectedStory === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.id, chapter)) : '',
+        path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.id, chapter)),
+        animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.id, chapter)) : '',
       }
   }))
   return {
@@ -38,7 +38,7 @@ export const loader: LoaderFunction = async ({request}):Promise<SelectionUserDat
     chapterPaths: await getSelectionChapterButtons(),
     title: await getSelectionTitleByChapter(chapter),
     subtitle: await getSelectionSubTitleByChapter(chapter),
-    selectedStory,
+    selectedStoryId,
     stories,
   }
 }
