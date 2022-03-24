@@ -20,8 +20,6 @@
 
 .chapter {
   position: absolute;
-  width: 100%;
-  height: 100%;
   transition: top 1s ease-in-out, left 1s ease-in-out, width 1s ease-in-out, height 1s ease-in-out, opacity 1s ease-in-out;
 }
 
@@ -126,10 +124,10 @@
 }
 
 .chapter__2--selected {
-  top: 7.1%;
-  left: 23.5%;
-  width: 53.1%;
-  height: 66.1%;
+  top: 9.6%;
+  left: 27.7%;
+  width: 44.6%;
+  height: 55%;
 }
 
 .chapter__3 {
@@ -140,10 +138,10 @@
 }
 
 .chapter__3--selected {
-  top: 7.1%;
-  left: 23.5%;
-  width: 53.1%;
-  height: 66.1%;
+  top: 9.8%;
+  left: 20.2%;
+  width: 59.7%;
+  height: 53.1%;
 }
 
 .chapter__4 {
@@ -154,10 +152,10 @@
 }
 
 .chapter__4--selected {
-  top: 7.1%;
-  left: 23.5%;
-  width: 53.1%;
-  height: 66.1%;
+  top: 9.8%;
+  left: 31.4%;
+  width: 37.2%;
+  height: 58.6%;
 }
 
 .chapter__5 {
@@ -168,10 +166,10 @@
 }
 
 .chapter__5--selected {
-  top: 7.1%;
+  top: 16.3%;
   left: 23.5%;
   width: 53.1%;
-  height: 66.1%;
+  height: 42.6%;
 }
 
 .chapter__6 {
@@ -182,10 +180,10 @@
 }
 
 .chapter__6--selected {
-  top: 7.1%;
-  left: 23.5%;
-  width: 53.1%;
-  height: 66.1%;
+  top: 19.5%;
+  left: 10.2%;
+  width: 79.6%;
+  height: 39.5%;
 }
 
 .chapter-modal {

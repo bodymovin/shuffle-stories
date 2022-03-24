@@ -1,6 +1,6 @@
 import Lottie from "lottie-web/build/player/lottie_worker"
 import type {AnimationItem, AnimationConfigWithPath, AnimationConfigWithData} from 'lottie-web/build/player/lottie'
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 type LottieRenderer = 'svg'
 
@@ -13,6 +13,7 @@ interface LottieComponentProps {
   onComplete?: () => void,
   className?: string
   direction?: 1 | -1
+  poster?: string | null,
 }
 
 function getConfig(props: LottieComponentProps, container: any): AnimationConfigWithPath | AnimationConfigWithData | null {
@@ -38,15 +39,17 @@ function getConfig(props: LottieComponentProps, container: any): AnimationConfig
 }
 
 function LottieComponent(props: LottieComponentProps) {
-  const {onComplete} = props
+  const {onComplete, poster} = props
   
   const containerElem = useRef(null)
   const containerAnimation = useRef<AnimationItem | null>(null)
+  const [isLoaded, setLoaded] = useState(false)
 
   const onDomLoaded = () => {
     if (containerAnimation.current && props.direction) {
       containerAnimation.current.setDirection(props.direction)
     }
+    setLoaded(true)
   }
 
   useEffect(() => {
@@ -54,6 +57,7 @@ function LottieComponent(props: LottieComponentProps) {
       if (containerAnimation.current) {
         containerAnimation.current.destroy()
       }
+      setLoaded(false)
       const config = getConfig(props, containerElem.current)
       if (config) {
         
@@ -75,10 +79,21 @@ function LottieComponent(props: LottieComponentProps) {
   
   return (
     <div
-      className={props.className}
-      ref={containerElem}
+      className={`lottie-wrapper ${props.className}`}
     >
+      {!!poster && 
+        <div
+          dangerouslySetInnerHTML={{__html: poster}}
+          className={`lottie-poster ${isLoaded ? 'lottie-poster--hidden' : ''}`}
+        >
+        </div>
+      }
+      <div
+        className={`lottie-animation ${isLoaded ? '' : 'lottie-animation--hidden'}`} 
+        ref={containerElem}
+      >
 
+      </div>
     </div>
   )
 }

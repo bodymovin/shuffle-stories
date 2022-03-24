@@ -1,7 +1,9 @@
-import { LoaderFunction, Outlet, redirect, useLoaderData, Link, useLocation } from "remix";
+import { Link, LoaderFunction, useLoaderData, useLocation } from "remix";
 import LottieComponent from "~/components/Lottie";
+import StoryVignette from "~/components/story/StoryVignette";
 import { Chapters } from "~/helpers/enums/chapters";
-import { ChapterStrings } from "~/interfaces/chapters";
+import { createSVG } from "~/helpers/svgToString";
+import { ChapterStrings, ChapterToContent } from "~/interfaces/chapters";
 import styles from "~/styles/story.css";
 
 const getChapterFromPath = (path: string): ChapterStrings | null => {
@@ -13,6 +15,34 @@ const getChapterFromPath = (path: string): ChapterStrings | null => {
     return chapterPart as ChapterStrings
   }
   return null
+}
+
+interface UserStoryData {
+  posters: ChapterToContent
+  animationPaths: ChapterToContent
+}
+
+export const loader: LoaderFunction = async ({request}):Promise<UserStoryData> => {
+  const posters: ChapterToContent = {
+    [Chapters.character]: await createSVG('/assets/story/1/character.svg'),
+    [Chapters.partner]: await createSVG('/assets/story/1/partner.svg'),
+    [Chapters.object]: await createSVG('/assets/story/1/object.svg'),
+    [Chapters.vehicle]: await createSVG('/assets/story/1/vehicle.svg'),
+    [Chapters.path]: await createSVG('/assets/story/1/path.svg'),
+    [Chapters.destination]: await createSVG('/assets/story/1/destination.svg'),
+  }
+  const animationPaths: ChapterToContent = {
+    [Chapters.character]: '/routed/assets/story/1/character_highlight.json',
+    [Chapters.partner]: '/routed/assets/story/1/partner_highlight.json',
+    [Chapters.object]: '/routed/assets/story/1/object_highlight.json',
+    [Chapters.vehicle]: '/routed/assets/story/1/vehicle_highlight.json',
+    [Chapters.path]: '/routed/assets/story/1/path_highlight.json',
+    [Chapters.destination]: '/routed/assets/story/1/destination_highlight.json',
+  }
+  return {
+    posters,
+    animationPaths,
+  }
 }
 
 export function links() {
@@ -30,6 +60,7 @@ function buildChapterButton(
   link: string,
   isSelected: boolean,
   hasChapterSelected: boolean,
+  poster: string,
 ) {
   let className = `chapter chapter__${chapterNumber}`
   if (isSelected) {
@@ -41,13 +72,11 @@ function buildChapterButton(
     <Link to={link} className={className}>
       <div className="chapter__background"></div>
       <div className="chapter__anim">
-          <LottieComponent
-            loop={false}
-            autoplay={true}
-            path={animationPath}
-            renderer={'svg'}
-            className={'chapter__anim_wrapper'}
-          />  
+          <StoryVignette
+            poster={poster}
+            animationPath={animationPath}
+            isSelected={isSelected}
+          />
       </div>
       <div className="chapter__border">
       </div>
@@ -58,51 +87,58 @@ function buildChapterButton(
 function Story() {
   const location = useLocation()
   const currentChapter = getChapterFromPath(location.pathname)
+  const {posters, animationPaths} = useLoaderData<UserStoryData>()
   return (
     <>
       <div className="wrapper">
         <div className="container">
           {buildChapterButton(
             1,
-            '/routed/assets/story/1/character.json',
+            animationPaths[Chapters.character],
             `/story/${Chapters.character}`,
             currentChapter === Chapters.character,
             !!currentChapter,
+            posters[Chapters.character],
           )}
           {buildChapterButton(
             2,
-            '/routed/assets/story/1/partner.json',
+            animationPaths[Chapters.partner],
             `/story/${Chapters.partner}`,
             currentChapter === Chapters.partner,
             !!currentChapter,
+            posters[Chapters.partner],
           )}
           {buildChapterButton(
             3,
-            '/routed/assets/story/1/object.json',
+            animationPaths[Chapters.object],
             `/story/${Chapters.object}`,
             currentChapter === Chapters.object,
             !!currentChapter,
+            posters[Chapters.object],
           )}
           {buildChapterButton(
             4,
-            '/routed/assets/story/1/vehicle.json',
+            animationPaths[Chapters.vehicle],
             `/story/${Chapters.vehicle}`,
             currentChapter === Chapters.vehicle,
             !!currentChapter,
+            posters[Chapters.vehicle],
           )}
           {buildChapterButton(
             5,
-            '/routed/assets/story/1/path.json',
+            animationPaths[Chapters.path],
             `/story/${Chapters.path}`,
             currentChapter === Chapters.path,
             !!currentChapter,
+            posters[Chapters.path],
           )}
           {buildChapterButton(
             6,
-            '/routed/assets/story/1/destination.json',
+            animationPaths[Chapters.destination],
             `/story/${Chapters.destination}`,
             currentChapter === Chapters.destination,
             !!currentChapter,
+            posters[Chapters.destination],
           )}
         </div>
       </div>

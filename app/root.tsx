@@ -11,6 +11,7 @@ import {
 import type { MetaFunction } from "remix";
 import styles from '~/styles/global.css'
 import menuStyles from '~/styles/menu.css'
+import lottieStyles from '~/styles/lottie.css'
 import { useLoaderData } from "remix";
 import { getColorsFromCookie } from "./helpers/colorParser";
 import { ColorSet } from "./interfaces/colors";
@@ -24,6 +25,7 @@ export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: styles },
     { rel: "stylesheet", href: menuStyles },
+    { rel: "stylesheet", href: lottieStyles },
   ];
 }
 
