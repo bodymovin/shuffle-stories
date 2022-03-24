@@ -1,7 +1,7 @@
 import { getUserPrefsFromRequest, updateUserPrefs, UserPrefs } from "~/cookies"
-import { Chapters } from "~/interfaces/chapters"
+import { ChapterStrings } from "~/interfaces/chapters"
 
-export const getUserStoryForChapterFromRequest = async (chapter: Chapters, request: Request) => {
+export const getUserStoryForChapterFromRequest = async (chapter: ChapterStrings, request: Request) => {
   const userPrefs = await getUserPrefsFromRequest(request)
   return userPrefs[chapter] || '1'
 }

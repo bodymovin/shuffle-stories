@@ -1,10 +1,7 @@
-export interface ChapterToContent {
-  character: string
-  partner: string
-  object: string
-  vehicle: string
-  path: string
-  destination: string
-}
+import { Chapters } from "~/helpers/enums/chapters"
 
-export type Chapters = 'character' | 'partner' | 'object' | 'vehicle' | 'path' | 'destination'
+export type ChapterStrings = keyof typeof Chapters;
+
+export type ChapterToContent = {
+  [key in Chapters]: string
+}

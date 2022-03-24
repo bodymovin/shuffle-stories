@@ -1,4 +1,4 @@
-import { Chapters, ChapterToContent } from "~/interfaces/chapters"
+import { ChapterStrings, ChapterToContent } from "~/interfaces/chapters"
 
 const chapterTitles: ChapterToContent = {
   character: 'The Adventurer',
@@ -19,10 +19,10 @@ const chapterSubtitles: ChapterToContent = {
   destination: 'A place to explore',
 }
 
-export const getSelectionTitleByChapter = async (chapter: Chapters): Promise<string> => {
+export const getSelectionTitleByChapter = async (chapter: ChapterStrings): Promise<string> => {
   return chapterTitles[chapter]
 }
 
-export const getSelectionSubTitleByChapter = async (chapter: Chapters): Promise<string> => {
+export const getSelectionSubTitleByChapter = async (chapter: ChapterStrings): Promise<string> => {
   return chapterSubtitles[chapter]
 }

@@ -1,11 +1,11 @@
-import { Chapters } from "~/interfaces/chapters"
+import { ChapterStrings } from "~/interfaces/chapters"
 import LottieComponent from "../Lottie"
-import { ChapterNavigation } from "./View"
+import { ChapterNavigation } from "~/routes/selection/$"
 
 export interface ChapterButtonProps {
   path: string
   chapter: ChapterNavigation
-  currentChapter: Chapters
+  currentChapter: ChapterStrings
 }
 
 function ChapterButton({chapter, currentChapter, path}: ChapterButtonProps) {
@@ -23,7 +23,6 @@ function ChapterButton({chapter, currentChapter, path}: ChapterButtonProps) {
           autoplay={true}
           path={path}
           renderer={'svg'}
-          className={''}
           direction={isSelected ? 1 : -1}
         />
       </button>

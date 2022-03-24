@@ -1,45 +1,111 @@
-import { useEffect, useState } from 'react'
-import { Form, useLoaderData } from 'remix'
-import { SelectionUserData } from '~/helpers/selection/loaderFunction'
-import { ChapterToContent, Chapters } from '~/interfaces/chapters'
-import LottieComponent from '../Lottie'
-import ChapterButton from './ChapterButton'
+import { useEffect, useState } from "react";
+import { ActionFunction, Form, LoaderFunction, redirect, useLoaderData } from "remix";
+import { bodyParser } from "remix-utils";
+import LottieComponent from "~/components/Lottie";
+import ChapterButton from "~/components/selection/ChapterButton";
+import { ChapterToContent, ChapterStrings } from "~/interfaces/chapters";
+import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from "../../helpers/animationData";
+import { Chapters } from "../../helpers/enums/chapters";
+import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from "../../helpers/story";
+import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from "../../helpers/textData";
+
+export const getChapterFromRequest = (request: Request): ChapterStrings => {
+  const urlData = new URL(request.url)
+  const path = urlData.pathname
+  const partParts = path.split('/')
+  console.log('Chapters', Chapters)
+  console.log('PART', partParts[partParts.length - 1])
+  if (Chapters.hasOwnProperty(partParts[partParts.length - 1])) {
+    // TODO: improve this
+    console.log('ENTROTROTROTO')
+    return partParts[partParts.length - 1] as ChapterStrings
+  }
+  throw redirect(`/selection/${Chapters.character}`, 302);
+}
+
+export interface SelectionUserData {
+  currentChapter: ChapterStrings
+  selectedStoryId: string
+  chapterPaths: ChapterToContent
+  title: string
+  subtitle: string
+  stories: SelectionStory[]
+}
+
+export const loader: LoaderFunction = async ({request}):Promise<SelectionUserData> => {
+  const chapter = getChapterFromRequest(request)
+  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request)
+  const stories = await Promise.all((
+    await getStories())
+    .map(async story => {
+      return {
+        ...story,
+        path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.id, chapter)),
+        animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.id, chapter)) : '',
+      }
+  }))
+  return {
+    currentChapter: chapter,
+    chapterPaths: await getSelectionChapterButtons(),
+    title: await getSelectionTitleByChapter(chapter),
+    subtitle: await getSelectionSubTitleByChapter(chapter),
+    selectedStoryId,
+    stories,
+  }
+}
+
+export const action: ActionFunction = async ({request}) => {
+  const body: any = await bodyParser.toJSON(request)
+  const headers: HeadersInit = {}
+  if (body.story) {
+    const chapter = getChapterFromRequest(request)
+    const storyChapter = {
+      [chapter]: body.story
+    }
+    const serializedCookie = await setUserStory(storyChapter, request)
+    headers['Set-Cookie'] = serializedCookie
+  }
+  return redirect(`selection/${body.redirect}`, {
+    headers: headers,
+  })
+}
+
 
 export interface ChapterNavigation {
-  id: Chapters
+  id: ChapterStrings
   path: string
   name: string
 }
 
-function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter: Chapters) {
+function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter: ChapterStrings) {
   const chapters: ChapterNavigation[] = [
     {
-      id: 'character',
+      id: Chapters.character,
       path: 'character',
       name: 'Character',
     },
     {
-      id: 'partner',
+      id: Chapters.partner,
       path: 'partner',
       name: 'Partner',
     },
     {
-      id: 'object',
+      id: Chapters.object,
       path: 'object',
       name: 'Object',
     },
     {
-      id: 'vehicle',
+      id: Chapters.vehicle,
       path: 'vehicle',
       name: 'Vehicle',
     },
     {
-      id: 'path',
+      id: Chapters.path,
       path: 'path',
       name: 'Path',
     },
     {
-      id: 'destination',
+      id: Chapters.destination,
       path: 'destination',
       name: 'Destination',
     }
@@ -60,7 +126,6 @@ function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter:
 function View() {
 
   const {chapterPaths, currentChapter, title, subtitle, selectedStoryId, stories} = useLoaderData<SelectionUserData>()
-  console.log('selectedStoryId', selectedStoryId)
   const [currentStoryId, setStoryId] = useState(selectedStoryId)
   const [isFirst, setIsFirst] = useState(true)
 

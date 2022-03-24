@@ -1,4 +1,4 @@
-import { ChapterToContent, Chapters } from "~/interfaces/chapters";
+import { ChapterToContent, ChapterStrings } from "~/interfaces/chapters";
 import { convertColors } from "./animationTransformer.server";
 import { loadJson } from "./fileLoader.server";
 
@@ -32,10 +32,10 @@ export const loadAnimation = async (path: string): Promise<AnimationData> => {
   return convertedAnimation
 }
 
-export const getSelectionChapterAnimationForStory = async (story: string, chapter: Chapters): Promise<AnimationData> => {
+export const getSelectionChapterAnimationForStory = async (story: string, chapter: ChapterStrings): Promise<AnimationData> => {
   return await loadAnimation(`assets/story/${story}/${selectionChapterMap[chapter]}`)
 }
 
-export const getSelectionChapterPathForStory = async (story: string, chapter: Chapters): Promise<string> => {
+export const getSelectionChapterPathForStory = async (story: string, chapter: ChapterStrings): Promise<string> => {
   return `/routed/assets/story/${story}/${selectionChapterMap[chapter]}`
 }
