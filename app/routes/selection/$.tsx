@@ -3,22 +3,24 @@ import { ActionFunction, Form, LoaderFunction, redirect, useLoaderData } from "r
 import { bodyParser } from "remix-utils";
 import LottieComponent from "~/components/Lottie";
 import ChapterButton from "~/components/selection/ChapterButton";
+import SubmitButton from "~/components/selection/SubmitButton";
 import { ChapterToContent, ChapterStrings } from "~/interfaces/chapters";
 import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from "../../helpers/animationData";
 import { Chapters } from "../../helpers/enums/chapters";
 import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from "../../helpers/story";
 import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from "../../helpers/textData";
 
-export const getChapterFromRequest = (request: Request): ChapterStrings => {
+const getChapterFromRequest = (request: Request): ChapterStrings => {
   const urlData = new URL(request.url)
   const path = urlData.pathname
   const partParts = path.split('/')
-  console.log('Chapters', Chapters)
-  console.log('PART', partParts[partParts.length - 1])
   if (Chapters.hasOwnProperty(partParts[partParts.length - 1])) {
     // TODO: improve this
-    console.log('ENTROTROTROTO')
     return partParts[partParts.length - 1] as ChapterStrings
+  }
+  // TODO: this should probably not throw here. Look into doing a union of chapters and story
+  if (partParts[partParts.length - 1] === 'story') {
+    throw redirect('/story', 302);
   }
   throw redirect(`/selection/${Chapters.character}`, 302);
 }
@@ -244,6 +246,12 @@ function View() {
             className='footer'
           >
             {buildChaptersNavigation(chapterPaths, currentChapter)}
+            <SubmitButton
+              id={'story'}
+              value={'story'}
+              isSelected={false}
+              path={'/routed/assets/selection/read_button_3.json'}
+            />
           </footer>
         </article>
       </Form>

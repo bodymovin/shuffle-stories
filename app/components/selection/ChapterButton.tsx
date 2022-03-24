@@ -1,6 +1,6 @@
 import { ChapterStrings } from "~/interfaces/chapters"
-import LottieComponent from "../Lottie"
 import { ChapterNavigation } from "~/routes/selection/$"
+import SubmitButton from './SubmitButton'
 
 export interface ChapterButtonProps {
   path: string
@@ -11,21 +11,12 @@ export interface ChapterButtonProps {
 function ChapterButton({chapter, currentChapter, path}: ChapterButtonProps) {
   const isSelected = currentChapter === chapter.id
   return (
-    <button
-        key={chapter.id}
-        type='submit'
-        name='redirect'
-        className={`footer__chapter-button ${isSelected ? 'footer__chapter-button--selected' : '' }`}
-        value={chapter.path}
-      >
-        <LottieComponent
-          loop={false}
-          autoplay={true}
-          path={path}
-          renderer={'svg'}
-          direction={isSelected ? 1 : -1}
-        />
-      </button>
+    <SubmitButton
+      id={chapter.id}
+      isSelected={isSelected}
+      path={path}
+      value={chapter.path}
+    />
   )
 }
 export default ChapterButton

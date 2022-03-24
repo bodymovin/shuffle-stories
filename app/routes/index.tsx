@@ -7,7 +7,7 @@ export const loader: LoaderFunction = async ({request}):Promise<null> => {
   if (!cookie.visitedSplash) {
     throw redirect('/splash', 302)
   } else {
-    throw redirect('/navigation', 302)
+    throw redirect('/selection/character', 302)
   }
   return null
 }
