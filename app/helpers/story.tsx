@@ -1,9 +1,10 @@
 import { getUserPrefsFromRequest, updateUserPrefs, UserPrefs } from "~/cookies"
 import { ChapterStrings } from "~/interfaces/chapters"
+import { db } from "~/utils/db.server"
 
-export const getUserStoryForChapterFromRequest = async (chapter: ChapterStrings, request: Request) => {
+export const getUserStoryForChapterFromRequest = async (chapter: ChapterStrings, request: Request): Promise<string> => {
   const userPrefs = await getUserPrefsFromRequest(request)
-  return userPrefs[chapter] || '1'
+  return userPrefs[chapter] || ''
 }
 
 export const setUserStory = async (data: UserPrefs, request: Request) => {
@@ -12,25 +13,19 @@ export const setUserStory = async (data: UserPrefs, request: Request) => {
 
 export interface SelectionStory {
   id: string
-  name: string
+  title: string
   path?: string
   animation?: string
 }
 
-export const getStories = async (): Promise<SelectionStory[]> => {
-  const stories = [
-    {
-      id: '1',
-      name: 'Friend of Monsters'
+export const getStories = async () => {
+  const stories = await db.story.findMany({
+    include: {
+      Chapter: true,
     },
-    {
-      id: '2',
-      name: 'Brewer of time'
-    },
-    {
-      id: '3',
-      name: 'Gambler of lost smiles'
+    orderBy: {
+      order: 'asc',
     }
-  ]
+  })
   return stories
 }

@@ -36,14 +36,16 @@ export interface SelectionUserData {
 
 export const loader: LoaderFunction = async ({request}):Promise<SelectionUserData> => {
   const chapter = getChapterFromRequest(request)
-  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request)
-  const stories = await Promise.all((
-    await getStories())
+  const stories = await getStories()
+  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request) || stories[0].id
+  const selectionStories = await Promise.all((
+    await stories)
     .map(async story => {
       return {
-        ...story,
-        path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.id, chapter)),
-        animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.id, chapter)) : '',
+        id: story.id,
+        title: story.title,
+        path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.path, chapter)),
+        animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.path, chapter)) : '',
       }
   }))
   return {
@@ -52,7 +54,7 @@ export const loader: LoaderFunction = async ({request}):Promise<SelectionUserDat
     title: await getSelectionTitleByChapter(chapter),
     subtitle: await getSelectionSubTitleByChapter(chapter),
     selectedStoryId,
-    stories,
+    stories: selectionStories,
   }
 }
 
