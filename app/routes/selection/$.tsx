@@ -9,7 +9,7 @@ import { Chapters } from "../../helpers/enums/chapters";
 import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from "../../helpers/story";
 import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from "../../helpers/textData";
 import { getSessionFromRequest, commitSession } from "~/sessions";
-import { createUser, getUserById } from "~/utils/user.server";
+import { getUserById, updateUser } from "~/utils/user.server";
 import StoryChapter from "~/components/selection/StoryChapter";
 import { User } from "@prisma/client";
 
@@ -20,10 +20,6 @@ const getChapterFromRequest = (request: Request): ChapterStrings => {
   if (Chapters.hasOwnProperty(partParts[partParts.length - 1])) {
     // TODO: improve this
     return partParts[partParts.length - 1] as ChapterStrings
-  }
-  // TODO: this should probably not throw here. Look into doing a union of chapters and story
-  if (partParts[partParts.length - 1] === 'story') {
-    throw redirect('/story', 302);
   }
   throw redirect(`/selection/${Chapters.character}`, 302);
 }
@@ -59,7 +55,7 @@ export const loader: LoaderFunction = async ({request}):Promise<any> => {
       return {
         id: story.id,
         title: story.title,
-        enabled: story.free || (user && user.games > 3),
+        enabled: story.free || (user && user.games >= 3),
         path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.path, chapter)),
         animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.path, chapter)) : '',
       }
@@ -93,7 +89,19 @@ export const action: ActionFunction = async ({request}) => {
     const serializedCookie = await setUserStory(storyChapter, request)
     headers['Set-Cookie'] = serializedCookie
   }
-  return redirect(`selection/${body.redirect}`, {
+  if (body.toStory) {
+    const session = await getSessionFromRequest(request);
+    const userId = session.get('userId');
+    if (userId) {
+      const user = await getUserById(userId);
+      if (user) {
+        user.games += 1;
+        await updateUser(user);
+      }
+    }
+  }
+  const redirectPath = body.redirect ? `selection/${body.redirect}` : 'story'
+  return redirect(redirectPath, {
     headers: headers,
   })
 }
@@ -258,6 +266,7 @@ function View() {
               id={'story'}
               value={'story'}
               isSelected={false}
+              name={'toStory'}
               path={'/routed/assets/selection/read_button_3.json'}
             />
           </footer>

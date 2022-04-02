@@ -5,14 +5,15 @@ export interface ChapterButtonProps {
   value: string
   id: string
   isSelected: boolean
+  name?: string
 }
 
-function SubmitButton({value, path, isSelected, id}: ChapterButtonProps) {
+function SubmitButton({value, path, isSelected, id, name = 'redirect'}: ChapterButtonProps) {
   return (
     <button
       key={id}
       type='submit'
-      name='redirect'
+      name={name}
       className={`footer__chapter-button ${isSelected ? 'footer__chapter-button--selected' : '' }`}
       value={value}
     >

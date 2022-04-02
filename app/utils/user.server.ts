@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import Prisma, { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { db } from "./db.server";
 import { hash } from "./password.server";
 
@@ -33,4 +33,14 @@ export const createUser = async (email: string, name: string, password: string):
     }
     return null
   }
+}
+
+export const updateUser = async (user: User): Promise<User> => {
+  const updatedUser = await db.user.update({
+    data: user,
+    where: {
+      id: user.id,
+    }
+  });
+  return updatedUser;
 }
