@@ -1,6 +1,7 @@
 import Lottie from "lottie-web/build/player/lottie_worker"
 import type {AnimationItem, AnimationConfigWithPath, AnimationConfigWithData} from 'lottie-web/build/player/lottie'
 import { useEffect, useRef, useState } from "react"
+import InlineSVG from "./InlineSVG"
 
 type LottieRenderer = 'svg'
 
@@ -82,11 +83,10 @@ function LottieComponent(props: LottieComponentProps) {
       className={`lottie-wrapper ${props.className}`}
     >
       {!!poster && 
-        <div
-          dangerouslySetInnerHTML={{__html: poster}}
+        <InlineSVG
+          content={poster}
           className={`lottie-poster ${isLoaded ? 'lottie-poster--hidden' : ''}`}
-        >
-        </div>
+        />
       }
       <div
         className={`lottie-animation ${isLoaded ? '' : 'lottie-animation--hidden'}`} 

@@ -1,10 +1,16 @@
+import { Story } from "@prisma/client"
 import { getUserPrefsFromRequest, updateUserPrefs, UserPrefs } from "~/cookies"
 import { ChapterStrings } from "~/interfaces/chapters"
 import { db } from "~/utils/db.server"
 
-export const getUserStoryForChapterFromRequest = async (chapter: ChapterStrings, request: Request): Promise<string> => {
+export const getUserStoryForChapterFromRequest = async (
+  chapter: ChapterStrings,
+  request: Request,
+  stories: Story[]): Promise<string> => {
   const userPrefs = await getUserPrefsFromRequest(request)
-  return userPrefs[chapter] || ''
+  const storyId = userPrefs[chapter]
+  const story = stories.find(story => story.id === storyId)
+  return (story && storyId) || stories[0].id
 }
 
 export const setUserStory = async (data: UserPrefs, request: Request) => {
@@ -16,6 +22,7 @@ export interface SelectionStory {
   title: string
   path?: string
   animation?: string
+  enabled: boolean
 }
 
 export const getStories = async () => {

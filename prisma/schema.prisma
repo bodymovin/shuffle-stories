@@ -32,12 +32,11 @@ model Chapter {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  uid      String @default(uuid())
+  id       String         @id @default(uuid())
   email    String @unique
   name     String
   password String
-  games    Int
+  games   Int @default(0)
 }
 
 enum ChapterType {

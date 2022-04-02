@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { ActionFunction, Form, LoaderFunction, redirect, useLoaderData } from "remix";
+import { ActionFunction, Form, LoaderFunction, redirect, useLoaderData, json } from "remix";
 import { bodyParser } from "remix-utils";
-import LottieComponent from "~/components/Lottie";
 import ChapterButton from "~/components/selection/ChapterButton";
 import SubmitButton from "~/components/selection/SubmitButton";
 import { ChapterToContent, ChapterStrings } from "~/interfaces/chapters";
@@ -9,6 +8,10 @@ import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSe
 import { Chapters } from "../../helpers/enums/chapters";
 import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from "../../helpers/story";
 import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from "../../helpers/textData";
+import { getSessionFromRequest, commitSession } from "~/sessions";
+import { createUser, getUserById } from "~/utils/user.server";
+import StoryChapter from "~/components/selection/StoryChapter";
+import { User } from "@prisma/client";
 
 const getChapterFromRequest = (request: Request): ChapterStrings => {
   const urlData = new URL(request.url)
@@ -32,30 +35,51 @@ export interface SelectionUserData {
   title: string
   subtitle: string
   stories: SelectionStory[]
+  user: User,
 }
 
-export const loader: LoaderFunction = async ({request}):Promise<SelectionUserData> => {
+export const loader: LoaderFunction = async ({request}):Promise<any> => {
+  
+  const session = await getSessionFromRequest(request)
+  const userId = session.get('userId');
+  let user: User | null = null
+  if (userId) {
+    user = await getUserById(userId)
+  } else {
+    // TODO: login
+    session.set('userId', 'd511e7f3-b3af-4d81-bd03-66a9ee016e0d')
+  }
+  //
   const chapter = getChapterFromRequest(request)
   const stories = await getStories()
-  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request) || stories[0].id
-  const selectionStories = await Promise.all((
-    await stories)
+  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request, stories)
+  const selectionStories = await Promise.all(
+    await stories
     .map(async story => {
       return {
         id: story.id,
         title: story.title,
+        enabled: story.free || (user && user.games > 3),
         path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.path, chapter)),
         animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.path, chapter)) : '',
       }
   }))
-  return {
-    currentChapter: chapter,
-    chapterPaths: await getSelectionChapterButtons(),
-    title: await getSelectionTitleByChapter(chapter),
-    subtitle: await getSelectionSubTitleByChapter(chapter),
-    selectedStoryId,
-    stories: selectionStories,
-  }
+  return json(
+    {
+      currentChapter: chapter,
+      chapterPaths: await getSelectionChapterButtons(),
+      title: await getSelectionTitleByChapter(chapter),
+      subtitle: await getSelectionSubTitleByChapter(chapter),
+      selectedStoryId,
+      stories: selectionStories,
+      user,
+    }, 
+    {
+      headers: {
+        'Set-Cookie': await commitSession(session),
+      }
+    }
+  )
 }
 
 export const action: ActionFunction = async ({request}) => {
@@ -129,7 +153,15 @@ function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter:
 
 function View() {
 
-  const {chapterPaths, currentChapter, title, subtitle, selectedStoryId, stories} = useLoaderData<SelectionUserData>()
+  const {
+    chapterPaths,
+    currentChapter,
+    title,
+    subtitle,
+    selectedStoryId,
+    stories,
+    user,
+  } = useLoaderData<SelectionUserData>()
   const [currentStoryId, setStoryId] = useState(selectedStoryId)
   const [isFirst, setIsFirst] = useState(true)
 
@@ -193,38 +225,12 @@ function View() {
                 >
                   {stories.map((story, index) => {
                     return (
-                      <div key={story.id} className={'story-container__scroller__element'}>
-                        <input
-                          className='story-radio-input'
-                          key={`${story.id}__input`}
-                          type='radio'
-                          id={`radio_${story.id}`}
-                          name='story'
-                          value={story.id}
-                          defaultChecked={selectedStoryId === story.id}
-                        />
-                        <label
-                          htmlFor={`radio_${story.id}`}
-                          key={`${story.id}__label`}
-                          className={'story'}
-                          id={`story-selection-${index}`}
-                        >
-                          <div className='story__container'>
-                            <div
-                              className='story__container__border'
-                            >
-                            </div>
-                            <LottieComponent
-                              loop={false}
-                              autoplay={true}
-                              path={story.path}
-                              animationString={story.animation}
-                              renderer={'svg'}
-                              className={'story__container__animation'}
-                            />
-                          </div>
-                        </label>
-                      </div>
+                      <StoryChapter
+                        key={story.id}
+                        story={story}
+                        selectedStoryId={selectedStoryId}
+                        user={user}
+                      />
                     )
                     })}
                   </div>
