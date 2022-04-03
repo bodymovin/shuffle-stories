@@ -1,28 +1,30 @@
 import { useEffect, useState } from 'react';
-import { ActionFunction, Form, LoaderFunction, redirect, useLoaderData, json } from 'remix';
+import {
+  ActionFunction, Form, LoaderFunction, redirect, useLoaderData, json,
+} from 'remix';
 import { bodyParser } from 'remix-utils';
 import ChapterButton from '~/components/selection/ChapterButton';
 import SubmitButton from '~/components/selection/SubmitButton';
-import { ChapterToContent, ChapterStrings } from '~/interfaces/chapters';
+import { ChapterToContent, ChapterStrings, ChapterNavigation } from '~/interfaces/chapters';
+import { User } from '@prisma/client';
+import { getUserById, updateUser } from '~/utils/user.server';
+import { getSessionFromRequest, commitSession } from '~/sessions';
+import StoryChapter from '~/components/selection/StoryChapter';
 import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from '../../helpers/animationData';
 import { Chapters } from '../../helpers/enums/chapters';
 import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from '../../helpers/story';
 import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from '../../helpers/textData';
-import { getSessionFromRequest, commitSession } from '~/sessions';
-import { getUserById, updateUser } from '~/utils/user.server';
-import StoryChapter from '~/components/selection/StoryChapter';
-import { User } from '@prisma/client';
 
 const getChapterFromRequest = (request: Request): ChapterStrings => {
-  const urlData = new URL(request.url)
-  const path = urlData.pathname
-  const partParts = path.split('/')
-  if (Chapters.hasOwnProperty(partParts[partParts.length - 1])) {
+  const urlData = new URL(request.url);
+  const path = urlData.pathname;
+  const partParts = path.split('/');
+  if (Object.prototype.hasOwnProperty.call(Chapters, partParts[partParts.length - 1])) {
     // TODO: improve this
-    return partParts[partParts.length - 1] as ChapterStrings
+    return partParts[partParts.length - 1] as ChapterStrings;
   }
   throw redirect(`/selection/${Chapters.character}`, 302);
-}
+};
 
 export interface SelectionUserData {
   currentChapter: ChapterStrings
@@ -35,31 +37,30 @@ export interface SelectionUserData {
 }
 
 export const loader: LoaderFunction = async ({request}):Promise<any> => {
-  
-  const session = await getSessionFromRequest(request)
+  const session = await getSessionFromRequest(request);
   const userId = session.get('userId');
-  let user: User | null = null
+  let user: User | null = null;
   if (userId) {
-    user = await getUserById(userId)
+    user = await getUserById(userId);
   } else {
     // TODO: login
-    session.set('userId', 'd511e7f3-b3af-4d81-bd03-66a9ee016e0d')
+    session.set('userId', 'd511e7f3-b3af-4d81-bd03-66a9ee016e0d');
   }
   //
-  const chapter = getChapterFromRequest(request)
-  const stories = await getStories()
-  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request, stories)
+  const chapter = getChapterFromRequest(request);
+  const stories = await getStories();
+  const selectedStoryId = await getUserStoryForChapterFromRequest(chapter, request, stories);
   const selectionStories = await Promise.all(
     await stories
-    .map(async story => {
-      return {
-        id: story.id,
-        title: story.title,
-        enabled: story.free || (user && user.games >= 3),
-        path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.path, chapter)),
-        animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.path, chapter)) : '',
-      }
-  }))
+      .map(async (story) => (
+        {
+          id: story.id,
+          title: story.title,
+          enabled: story.free || (user && user.games >= 3),
+          path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.path, chapter)),
+          animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.path, chapter)) : '',
+        }
+      )));
   return json(
     {
       currentChapter: chapter,
@@ -69,25 +70,26 @@ export const loader: LoaderFunction = async ({request}):Promise<any> => {
       selectedStoryId,
       stories: selectionStories,
       user,
-    }, 
+    },
     {
       headers: {
         'Set-Cookie': await commitSession(session),
-      }
-    }
-  )
-}
+      },
+    },
+  );
+};
 
-export const action: ActionFunction = async ({request}) => {
-  const body: any = await bodyParser.toJSON(request)
-  const headers: HeadersInit = {}
+export const action: ActionFunction = async ({ request }) => {
+  const body: any = await bodyParser.toJSON(request);
+  // eslint-disable-next-line no-undef
+  const headers: HeadersInit = {};
   if (body.story) {
-    const chapter = getChapterFromRequest(request)
+    const chapter = getChapterFromRequest(request);
     const storyChapter = {
-      [chapter]: body.story
-    }
-    const serializedCookie = await setUserStory(storyChapter, request)
-    headers['Set-Cookie'] = serializedCookie
+      [chapter]: body.story,
+    };
+    const serializedCookie = await setUserStory(storyChapter, request);
+    headers['Set-Cookie'] = serializedCookie;
   }
   if (body.toStory) {
     const session = await getSessionFromRequest(request);
@@ -100,18 +102,11 @@ export const action: ActionFunction = async ({request}) => {
       }
     }
   }
-  const redirectPath = body.redirect ? `selection/${body.redirect}` : 'story'
+  const redirectPath = body.redirect ? `selection/${body.redirect}` : 'story';
   return redirect(redirectPath, {
-    headers: headers,
-  })
-}
-
-
-export interface ChapterNavigation {
-  id: ChapterStrings
-  path: string
-  name: string
-}
+    headers,
+  });
+};
 
 function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter: ChapterStrings) {
   const chapters: ChapterNavigation[] = [
@@ -144,23 +139,19 @@ function buildChaptersNavigation(chapterPaths: ChapterToContent, currentChapter:
       id: Chapters.destination,
       path: 'destination',
       name: 'Destination',
-    }
-  ]
-  return chapters.map((chapter) => {
-    return (
-      <ChapterButton
-        key={chapter.id}
-        chapter={chapter}
-        currentChapter={currentChapter}
-        path={chapterPaths[chapter.id]}
-      />
-    )
-  })
-  
+    },
+  ];
+  return chapters.map((chapter) => (
+    <ChapterButton
+      key={chapter.id}
+      chapter={chapter}
+      currentChapter={currentChapter}
+      path={chapterPaths[chapter.id]}
+    />
+  ));
 }
 
 function View() {
-
   const {
     chapterPaths,
     currentChapter,
@@ -169,110 +160,108 @@ function View() {
     selectedStoryId,
     stories,
     user,
-  } = useLoaderData<SelectionUserData>()
-  const [currentStoryId, setStoryId] = useState(selectedStoryId)
-  const [isFirst, setIsFirst] = useState(true)
+  } = useLoaderData<SelectionUserData>();
+  const [currentStoryId, setStoryId] = useState(selectedStoryId);
+  const [isFirst, setIsFirst] = useState(true);
 
   useEffect(() => {
-    setStoryId(selectedStoryId)
-    setIsFirst(true)
-  }, [currentChapter, selectedStoryId])
+    setStoryId(selectedStoryId);
+    setIsFirst(true);
+  }, [currentChapter, selectedStoryId]);
 
   const navigateToNextStory = (direction: number) => {
-    const currentStoryIndex = stories.findIndex(story => story.id === currentStoryId)
+    const currentStoryIndex = stories.findIndex((story) => story.id === currentStoryId);
     if (currentStoryIndex > 0 && direction === -1) {
-      setStoryId(stories[currentStoryIndex - 1].id)
+      setStoryId(stories[currentStoryIndex - 1].id);
     } else if (currentStoryIndex < stories.length - 1 && direction === 1) {
-      setStoryId(stories[currentStoryIndex + 1].id)
+      setStoryId(stories[currentStoryIndex + 1].id);
     }
-    setIsFirst(false)
-  }
+    setIsFirst(false);
+  };
 
-  const currentStoryIndex = stories.findIndex(story => story.id === currentStoryId)
+  const currentStoryIndex = stories.findIndex((story) => story.id === currentStoryId);
 
   return (
-    <>
-      <Form
-        method='post'
-        action={`/selection/${currentChapter}`}
-        className='wrapper'
+    <Form
+      method="post"
+      action={`/selection/${currentChapter}`}
+      className="wrapper"
+    >
+      <article
+        className="container"
       >
-        <article
-          className='container'
+        <header
+          className="header"
         >
-          <header
-            className='header'
+          <h1 className="header--title">{title}</h1>
+          <h2 className="header--subtitle">{subtitle}</h2>
+        </header>
+        <main
+          className="main"
+        >
+          <button
+            type="button"
+            onClick={(ev) => { ev.preventDefault(); navigateToNextStory(-1); }}
+            className="story__navigation"
+            disabled={currentStoryIndex <= 0}
           >
-            <h1 className='header--title'>{title}</h1>
-            <h2 className='header--subtitle'>{subtitle}</h2>
-          </header>
-          <main
-            className='main'
+            <svg
+              viewBox="0 0 54.01 106.02"
+              className="story__navigation__icon story__navigation__icon--flipped"
+            >
+              <polyline
+                points="1,1 53.01,53.01 1,105.02"
+              />
+            </svg>
+          </button>
+          <div
+            className="story-container"
+            key={currentChapter}
           >
-              <button
-                onClick={(ev) => {ev.preventDefault(); navigateToNextStory(-1)}}
-                className='story__navigation'
-                disabled={currentStoryIndex <= 0}
-              >
-                <svg
-                    viewBox='0 0 54.01 106.02'
-                    className='story__navigation__icon story__navigation__icon--flipped'
-                  >
-                  <polyline
-                    points='1,1 53.01,53.01 1,105.02'
-                  />
-                </svg>
-              </button>
-              <div
-                className='story-container'
-                key={currentChapter}
-              >
-                <div
-                  className={`story-container__scroller ${isFirst ? '' : 'story-container__scroller--animated' }`}
-                  style={{transform: `translate(${-100 * currentStoryIndex}%, 0)`}}
-                >
-                  {stories.map((story, index) => {
-                    return (
-                      <StoryChapter
-                        key={story.id}
-                        story={story}
-                        selectedStoryId={selectedStoryId}
-                        user={user}
-                      />
-                    )
-                    })}
-                  </div>
-              </div>
-              <button
-                onClick={(ev) => {ev.preventDefault(); navigateToNextStory(1)}}
-                className='story__navigation'
-                disabled={currentStoryIndex >= stories.length - 1}
-              >
-                <svg
-                    viewBox='0 0 54.01 106.02'
-                    className='story__navigation__icon'
-                  >
-                  <polyline
-                    points='1,1 53.01,53.01 1,105.02'
-                  />
-                </svg>
-              </button>
-          </main>
-          <footer
-            className='footer'
+            <div
+              className={`story-container__scroller ${isFirst ? '' : 'story-container__scroller--animated'}`}
+              style={{ transform: `translate(${-100 * currentStoryIndex}%, 0)` }}
+            >
+              {stories.map((story) => (
+                <StoryChapter
+                  key={story.id}
+                  story={story}
+                  selectedStoryId={selectedStoryId}
+                  user={user}
+                />
+              ))}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={(ev) => { ev.preventDefault(); navigateToNextStory(1); }}
+            className="story__navigation"
+            disabled={currentStoryIndex >= stories.length - 1}
           >
-            {buildChaptersNavigation(chapterPaths, currentChapter)}
-            <SubmitButton
-              id={'story'}
-              value={'story'}
-              isSelected={false}
-              name={'toStory'}
-              path={'/routed/assets/selection/read_button_3.json'}
-            />
-          </footer>
-        </article>
-      </Form>
-    </>
-  )
+            <svg
+              viewBox="0 0 54.01 106.02"
+              className="story__navigation__icon"
+            >
+              <polyline
+                points="1,1 53.01,53.01 1,105.02"
+              />
+            </svg>
+          </button>
+        </main>
+        <footer
+          className="footer"
+        >
+          {buildChaptersNavigation(chapterPaths, currentChapter)}
+          <SubmitButton
+            id="story"
+            value="story"
+            isSelected={false}
+            name="toStory"
+            path="/routed/assets/selection/read_button_3.json"
+          />
+        </footer>
+      </article>
+    </Form>
+  );
 }
-export default View
+export default View;

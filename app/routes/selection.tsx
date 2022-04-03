@@ -6,21 +6,21 @@ export function links() {
   return [
     {
       rel: 'stylesheet',
-      href: styles
-    }
-  ]
+      href: styles,
+    },
+  ];
 }
 
 export const loader: LoaderFunction = async ({request}): Promise<any> => {
-  const serializedCookie = await updateUserPrefs(request, {visitedSplash: true})
-  return json({ 
+  const serializedCookie = await updateUserPrefs(request, {visitedSplash: true});
+  return json({
     ok: true,
   }, {
     headers: {
       'Set-Cookie': serializedCookie,
-    }
+    },
   });
-}
+};
 
 export default function Navigation() {
   return (

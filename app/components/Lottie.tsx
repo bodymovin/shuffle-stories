@@ -1,7 +1,9 @@
-import Lottie from "lottie-web/build/player/lottie_worker"
-import type {AnimationItem, AnimationConfigWithPath, AnimationConfigWithData} from 'lottie-web/build/player/lottie'
-import { useEffect, useRef, useState } from "react"
-import InlineSVG from "./InlineSVG"
+import Lottie from 'lottie-web/build/player/lottie_worker';
+import type {
+  AnimationItem, AnimationConfigWithPath, AnimationConfigWithData,
+} from 'lottie-web/build/player/lottie';
+import { useEffect, useRef, useState } from 'react';
+import InlineSVG from './InlineSVG';
 
 type LottieRenderer = 'svg'
 
@@ -17,7 +19,10 @@ interface LottieComponentProps {
   poster?: string | null,
 }
 
-function getConfig(props: LottieComponentProps, container: any): AnimationConfigWithPath | AnimationConfigWithData | null {
+function getConfig(
+  props: LottieComponentProps,
+  container: any,
+): AnimationConfigWithPath | AnimationConfigWithData | null {
   if (props.path) {
     return {
       container,
@@ -25,77 +30,93 @@ function getConfig(props: LottieComponentProps, container: any): AnimationConfig
       autoplay: props.autoplay,
       renderer: props.renderer,
       path: props.path,
-    }
-  } else if (props.animationString) {
+    };
+  }
+  if (props.animationString) {
     return {
       container,
       loop: props.loop,
       autoplay: props.autoplay,
       renderer: props.renderer,
-      animationData: JSON.parse(props.animationString)
-    }
-  } else {
-    return null
+      animationData: JSON.parse(props.animationString),
+    };
   }
+  return null;
 }
 
 function LottieComponent(props: LottieComponentProps) {
-  const {onComplete, poster} = props
-  
-  const containerElem = useRef(null)
-  const containerAnimation = useRef<AnimationItem | null>(null)
-  const [isLoaded, setLoaded] = useState(false)
+  const {
+    onComplete,
+    poster,
+    direction,
+    animationString,
+    path,
+    className,
+  } = props;
+
+  const containerElem = useRef(null);
+  const containerAnimation = useRef<AnimationItem | null>(null);
+  const [isLoaded, setLoaded] = useState(false);
 
   const onDomLoaded = () => {
-    if (containerAnimation.current && props.direction) {
-      containerAnimation.current.setDirection(props.direction)
+    if (containerAnimation.current && direction) {
+      containerAnimation.current.setDirection(direction);
     }
-    setLoaded(true)
-  }
+    setLoaded(true);
+  };
 
   useEffect(() => {
     if (containerElem.current) {
       if (containerAnimation.current) {
-        containerAnimation.current.destroy()
+        containerAnimation.current.destroy();
       }
-      setLoaded(false)
-      const config = getConfig(props, containerElem.current)
+      setLoaded(false);
+      const config = getConfig(props, containerElem.current);
       if (config) {
-        
-        containerAnimation.current = Lottie.loadAnimation(config)
+        containerAnimation.current = Lottie.loadAnimation(config);
         if (onComplete) {
-          containerAnimation.current.addEventListener('complete', onComplete)
+          containerAnimation.current.addEventListener('complete', onComplete);
         }
-        containerAnimation.current.addEventListener('DOMLoaded', onDomLoaded)
+        containerAnimation.current.addEventListener('DOMLoaded', onDomLoaded);
       }
     }
-  }, [props.animationString, props.path])
+  }, [animationString, path]);
 
   useEffect(() => {
-    if (containerAnimation.current && props.direction) {
-      containerAnimation.current.setDirection(props.direction)
-      containerAnimation.current.play()
+    if (containerAnimation.current && direction) {
+      containerAnimation.current.setDirection(direction);
+      containerAnimation.current.play();
     }
-  }, [props.direction])
-  
+  }, [direction]);
+
   return (
     <div
-      className={`lottie-wrapper ${props.className}`}
+      className={`lottie-wrapper ${className}`}
     >
-      {!!poster && 
+      {!!poster
+        && (
         <InlineSVG
           content={poster}
           className={`lottie-poster ${isLoaded ? 'lottie-poster--hidden' : ''}`}
         />
-      }
+        )}
       <div
-        className={`lottie-animation ${isLoaded ? '' : 'lottie-animation--hidden'}`} 
+        className={`lottie-animation ${isLoaded ? '' : 'lottie-animation--hidden'}`}
         ref={containerElem}
-      >
-
-      </div>
+      />
     </div>
-  )
+  );
 }
 
-export default LottieComponent
+LottieComponent.defaultProps = {
+  autoplay: false,
+  loop: false,
+  animationString: '',
+  path: '',
+  onComplete: () => {},
+  className: '',
+  direction: 1,
+  poster: null,
+};
+
+export default LottieComponent;

@@ -18,15 +18,15 @@ export const userPrefs = createCookie('user-prefs', {
 });
 
 export const getUserPrefsFromRequest = async (request: Request): Promise<UserPrefs> => {
-  const cookieHeader = request.headers.get('Cookie')
-  const cookie = (await userPrefs.parse(cookieHeader)) || {}
-  return cookie
-}
+  const cookieHeader = request.headers.get('Cookie');
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  return cookie;
+};
 
 export const updateUserPrefs = async (request: Request, keys: UserPrefs) => {
   const cookie = {
     ...(await getUserPrefsFromRequest(request)),
     ...keys,
-  }
-  return await userPrefs.serialize(cookie)
-}
+  };
+  return userPrefs.serialize(cookie);
+};

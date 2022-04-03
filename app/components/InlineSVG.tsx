@@ -4,14 +4,18 @@ interface InlineSVGInterface {
 }
 
 function InlineSVG(props: InlineSVGInterface) {
-  const {content, className = ''} = props
+  const { content, className = '' } = props;
   return (
     <div
-          style={{width: '100%', height: '100%'}}
-          dangerouslySetInnerHTML={{__html: content}}
-          className={className}
-        >
-    </div>
-  )
+      style={{ width: '100%', height: '100%' }}
+      dangerouslySetInnerHTML={{ __html: content }}
+      className={className}
+    />
+  );
 }
-export default InlineSVG
+
+InlineSVG.defaultProps = {
+  className: '',
+};
+
+export default InlineSVG;

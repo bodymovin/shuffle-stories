@@ -1,6 +1,5 @@
-import { ChapterStrings } from '~/interfaces/chapters'
-import { ChapterNavigation } from '~/routes/selection/$'
-import SubmitButton from './SubmitButton'
+import { ChapterStrings, ChapterNavigation } from '~/interfaces/chapters';
+import SubmitButton from './SubmitButton';
 
 export interface ChapterButtonProps {
   path: string
@@ -8,8 +7,8 @@ export interface ChapterButtonProps {
   currentChapter: ChapterStrings
 }
 
-function ChapterButton({chapter, currentChapter, path}: ChapterButtonProps) {
-  const isSelected = currentChapter === chapter.id
+function ChapterButton({ chapter, currentChapter, path }: ChapterButtonProps) {
+  const isSelected = currentChapter === chapter.id;
   return (
     <SubmitButton
       id={chapter.id}
@@ -17,6 +16,6 @@ function ChapterButton({chapter, currentChapter, path}: ChapterButtonProps) {
       path={path}
       value={chapter.path}
     />
-  )
+  );
 }
-export default ChapterButton
+export default ChapterButton;

@@ -1,4 +1,4 @@
-import LottieComponent from "../Lottie"
+import LottieComponent from '../Lottie';
 
 export interface StoryVignetteProps {
   poster: string
@@ -6,17 +6,17 @@ export interface StoryVignetteProps {
   isSelected: boolean
 }
 
-function StoryVignette({animationPath, poster, isSelected}: StoryVignetteProps) {
-  const path = isSelected ? animationPath : ''
+function StoryVignette({ animationPath, poster, isSelected }: StoryVignetteProps) {
+  const path = isSelected ? animationPath : '';
   return (
     <LottieComponent
       loop={false}
-      autoplay={true}
+      autoplay
       path={path}
-      renderer={'svg'}
-      className={'chapter__anim_wrapper'}
+      renderer="svg"
+      className="chapter__anim_wrapper"
       poster={poster}
     />
-  )
+  );
 }
-export default StoryVignette
+export default StoryVignette;
