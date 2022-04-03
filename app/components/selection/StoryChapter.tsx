@@ -83,11 +83,11 @@ function StoryChapter(props: StoryChapterProps) {
                     className="anim-color-1"
                   />
                 </figure>
-                <caption
+                <figcaption
                   className="story__container__lock__content__caption"
                 >
                   {`you need to play ${3 - user.games} more time(s) \r\n to unlock this story`}
-                </caption>
+                </figcaption>
               </div>
             </div>
             )}
