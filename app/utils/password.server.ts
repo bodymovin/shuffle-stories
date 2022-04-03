@@ -10,4 +10,4 @@ export const hash = async (password: string): Promise<string> => {
 export const validate = async (
   password: string,
   hashString: string,
-): Promise<string> => bcrypt.hash(password, hashString);
+): Promise<boolean> => bcrypt.compare(password, hashString);

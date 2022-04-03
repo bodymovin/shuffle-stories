@@ -12,7 +12,9 @@ import { getSessionFromRequest, commitSession } from '~/sessions';
 import StoryChapter from '~/components/selection/StoryChapter';
 import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from '../../helpers/animationData';
 import { Chapters } from '../../helpers/enums/chapters';
-import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from '../../helpers/story';
+import {
+  getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory,
+} from '../../helpers/story';
 import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from '../../helpers/textData';
 
 const getChapterFromRequest = (request: Request): ChapterStrings => {
@@ -36,7 +38,7 @@ export interface SelectionUserData {
   user: User,
 }
 
-export const loader: LoaderFunction = async ({request}):Promise<any> => {
+export const loader: LoaderFunction = async ({ request }):Promise<any> => {
   const session = await getSessionFromRequest(request);
   const userId = session.get('userId');
   let user: User | null = null;
@@ -60,7 +62,8 @@ export const loader: LoaderFunction = async ({request}):Promise<any> => {
           path: selectedStoryId === story.id ? '' : (await getSelectionChapterPathForStory(story.path, chapter)),
           animation: selectedStoryId === story.id ? JSON.stringify(await getSelectionChapterAnimationForStory(story.path, chapter)) : '',
         }
-      )));
+      )),
+  );
   return json(
     {
       currentChapter: chapter,

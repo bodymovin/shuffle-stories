@@ -1,16 +1,15 @@
 import { redirect } from 'remix';
 import type { LoaderFunction } from 'remix';
-import { getUserPrefsFromRequest } from '~/cookies'
+import { getUserPrefsFromRequest } from '~/cookies';
 
-export const loader: LoaderFunction = async ({request}):Promise<null> => {
-  const cookie = await getUserPrefsFromRequest(request)
+export const loader: LoaderFunction = async ({ request }):Promise<null> => {
+  const cookie = await getUserPrefsFromRequest(request);
   if (!cookie.visitedSplash) {
-    throw redirect('/splash', 302)
+    throw redirect('/splash', 302);
   } else {
-    throw redirect('/selection/character', 302)
+    throw redirect('/selection/character', 302);
   }
-  return null
-}
+};
 
 export default function Index() {
   return (

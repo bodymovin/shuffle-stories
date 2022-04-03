@@ -98,6 +98,11 @@ function Menu() {
             {buildPalettePicker(fetcher)}
           </li>
         </ul>
+        <form action="/logout" method="post">
+          <button type="submit" className="button">
+            Logout
+          </button>
+        </form>
       </div>
       <label
         className="menu-button"

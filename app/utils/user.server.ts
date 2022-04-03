@@ -1,7 +1,9 @@
 import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
+import { redirect } from 'remix';
+import { destroySession, getSessionFromRequest } from '~/sessions';
 import { db } from './db.server';
-import { hash } from './password.server';
+import { hash, validate } from './password.server';
 
 export const getUserById = async (id: string): Promise<User | null> => {
   const user = await db.user.findUnique({
@@ -47,4 +49,32 @@ export const updateUser = async (user: User): Promise<User> => {
     },
   });
   return updatedUser;
+};
+
+export const findUserByEmailAndPassword = async (
+  email: string,
+  password: string,
+): Promise<User | null> => {
+  const user = await db.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (user) {
+    const isCorrectPassword = await validate(password, user.password);
+    if (isCorrectPassword) {
+      return user;
+    }
+  }
+  return null;
+};
+
+export async function logout(request: Request) {
+  const session = await getSessionFromRequest(request);
+  return redirect('/login', {
+    headers: {
+      'Set-Cookie': await destroySession(session),
+    },
+  });
 };
