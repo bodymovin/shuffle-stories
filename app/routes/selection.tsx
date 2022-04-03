@@ -1,11 +1,11 @@
-import { json, LoaderFunction, Outlet } from "remix";
-import { updateUserPrefs } from "~/cookies";
-import styles from "~/styles/selection.css";
+import { json, LoaderFunction, Outlet } from 'remix';
+import { updateUserPrefs } from '~/cookies';
+import styles from '~/styles/selection.css';
 
 export function links() {
   return [
     {
-      rel: "stylesheet",
+      rel: 'stylesheet',
       href: styles
     }
   ]

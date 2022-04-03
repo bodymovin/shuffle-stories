@@ -1,7 +1,7 @@
-import { Story } from "@prisma/client"
-import { getUserPrefsFromRequest, updateUserPrefs, UserPrefs } from "~/cookies"
-import { ChapterStrings } from "~/interfaces/chapters"
-import { db } from "~/utils/db.server"
+import { Story } from '@prisma/client'
+import { getUserPrefsFromRequest, updateUserPrefs, UserPrefs } from '~/cookies'
+import { ChapterStrings } from '~/interfaces/chapters'
+import { db } from '~/utils/db.server'
 
 export const getUserStoryForChapterFromRequest = async (
   chapter: ChapterStrings,
@@ -28,7 +28,7 @@ export interface SelectionStory {
 export const getStories = async () => {
   const stories = await db.story.findMany({
     include: {
-      Chapter: true,
+      chapters: true,
     },
     orderBy: {
       order: 'asc',

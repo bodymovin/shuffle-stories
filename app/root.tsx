@@ -7,25 +7,25 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "remix";
-import type { MetaFunction } from "remix";
+} from 'remix';
+import type { MetaFunction } from 'remix';
 import styles from '~/styles/global.css'
 import menuStyles from '~/styles/menu.css'
 import lottieStyles from '~/styles/lottie.css'
-import { useLoaderData } from "remix";
-import { getColorsFromCookie } from "./helpers/colorParser";
-import { ColorSet } from "./interfaces/colors";
-import Menu from "./components/menu/Menu";
+import { useLoaderData } from 'remix';
+import { getColorsFromCookie } from './helpers/colorParser';
+import { ColorSet } from './interfaces/colors';
+import Menu from './components/menu/Menu';
 
 export const meta: MetaFunction = () => {
-  return { title: "Shuffle Stories" };
+  return { title: 'Shuffle Stories' };
 };
 
 export const links: LinksFunction = () => {
   return [
-    { rel: "stylesheet", href: styles },
-    { rel: "stylesheet", href: menuStyles },
-    { rel: "stylesheet", href: lottieStyles },
+    { rel: 'stylesheet', href: styles },
+    { rel: 'stylesheet', href: menuStyles },
+    { rel: 'stylesheet', href: lottieStyles },
   ];
 }
 
@@ -42,7 +42,7 @@ export const loader: LoaderFunction = async ({request}):Promise<UserData> => {
 export default function App() {
 
   const {colors} = useLoaderData<UserData>()
-  if (typeof document !== "undefined") {
+  if (typeof document !== 'undefined') {
     const root = document.documentElement;
     root.style.setProperty('--color-1', colors.color1);
     root.style.setProperty('--color-2', colors.color2);

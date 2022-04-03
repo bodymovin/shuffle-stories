@@ -1,6 +1,6 @@
-import { redirect } from "remix";
-import type { LoaderFunction } from "remix";
-import { getUserPrefsFromRequest } from "~/cookies"
+import { redirect } from 'remix';
+import type { LoaderFunction } from 'remix';
+import { getUserPrefsFromRequest } from '~/cookies'
 
 export const loader: LoaderFunction = async ({request}):Promise<null> => {
   const cookie = await getUserPrefsFromRequest(request)
@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({request}):Promise<null> => {
 
 export default function Index() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+    <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.4' }}>
       <h1>Welcome to Shuffle Stories</h1>
     </div>
   );

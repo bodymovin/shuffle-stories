@@ -1,6 +1,6 @@
-import { bodyParser } from "remix-utils"
-import { getUserPrefsFromRequest, updateUserPrefs } from "~/cookies"
-import { ColorSet } from "~/interfaces/colors"
+import { bodyParser } from 'remix-utils'
+import { getUserPrefsFromRequest, updateUserPrefs } from '~/cookies'
+import { ColorSet } from '~/interfaces/colors'
 
 const DEFAULT_COLOR_1 = '#353535'
 const DEFAULT_COLOR_2 = '#FFEBD5'

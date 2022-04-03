@@ -17,7 +17,7 @@ const selectionChapterMap: ChapterToContent = {
 
 export const getSelectionChapterButtons = async (): Promise<ChapterToContent> => {
   return {
-    'character': `/routed/assets/selection/Adventurer.json`,
+    'character': '/routed/assets/selection/Adventurer.json',
     'partner': '/routed/assets/selection/Partner.json',
     'object': '/routed/assets/selection/Object.json',
     'vehicle': '/routed/assets/selection/Vehicle.json',

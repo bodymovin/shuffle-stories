@@ -1,5 +1,5 @@
-import { LoaderFunction } from "remix"
-import { loadAnimation } from "~/helpers/animationData"
+import { LoaderFunction } from 'remix'
+import { loadAnimation } from '~/helpers/animationData'
 
 export const loader: LoaderFunction = async ({request}) => {
   const url = new URL(request.url)
@@ -8,7 +8,7 @@ export const loader: LoaderFunction = async ({request}) => {
   const animation = await loadAnimation(pathname.substr(pathname.indexOf(prefix) + prefix.length))
   return new Response(JSON.stringify(animation), {
     headers: {
-      "Content-Type": 'application/json'
+      'Content-Type': 'application/json'
     }
   })
 }

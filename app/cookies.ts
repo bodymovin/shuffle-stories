@@ -1,4 +1,4 @@
-import { createCookie } from "remix";
+import { createCookie } from 'remix';
 
 export interface UserPrefs {
   visitedSplash?: boolean,
@@ -13,12 +13,12 @@ export interface UserPrefs {
   destination?: string
 }
 
-export const userPrefs = createCookie("user-prefs", {
+export const userPrefs = createCookie('user-prefs', {
   maxAge: 604_800, // one week
 });
 
 export const getUserPrefsFromRequest = async (request: Request): Promise<UserPrefs> => {
-  const cookieHeader = request.headers.get("Cookie")
+  const cookieHeader = request.headers.get('Cookie')
   const cookie = (await userPrefs.parse(cookieHeader)) || {}
   return cookie
 }

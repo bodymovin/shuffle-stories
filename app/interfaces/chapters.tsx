@@ -1,4 +1,4 @@
-import { Chapters } from "~/helpers/enums/chapters"
+import { Chapters } from '~/helpers/enums/chapters'
 
 export type ChapterStrings = keyof typeof Chapters;
 

@@ -1,12 +1,12 @@
-import { Chapter, Story } from "@prisma/client";
-import { Link, LoaderFunction, useLoaderData, useLocation } from "remix";
-import StoryVignette from "~/components/story/StoryVignette";
-import { getUserPrefsFromRequest } from "~/cookies";
-import { Chapters } from "~/helpers/enums/chapters";
-import { createSVG } from "~/helpers/svgToString";
-import { ChapterStrings, ChapterToContent } from "~/interfaces/chapters";
-import styles from "~/styles/story.css";
-import { findStories, StoryWithChapters } from "~/utils/stories.server";
+import { Chapter, Story } from '@prisma/client';
+import { Link, LoaderFunction, useLoaderData, useLocation } from 'remix';
+import StoryVignette from '~/components/story/StoryVignette';
+import { getUserPrefsFromRequest } from '~/cookies';
+import { Chapters } from '~/helpers/enums/chapters';
+import { createSVG } from '~/helpers/svgToString';
+import { ChapterStrings, ChapterToContent } from '~/interfaces/chapters';
+import styles from '~/styles/story.css';
+import { findStories, StoryWithChapters } from '~/utils/stories.server';
 
 const getChapterFromPath = (path: string): ChapterStrings | null => {
   
@@ -92,7 +92,7 @@ export const loader: LoaderFunction = async ({request}):Promise<UserStoryData> =
 export function links() {
   return [
     {
-      rel: "stylesheet",
+      rel: 'stylesheet',
       href: styles
     }
   ]
@@ -114,15 +114,15 @@ function buildChapterButton(
   }
   return (
     <Link to={link} className={className}>
-      <div className="chapter__background"></div>
-      <div className="chapter__anim">
+      <div className='chapter__background'></div>
+      <div className='chapter__anim'>
           <StoryVignette
             poster={poster}
             animationPath={animationPath}
             isSelected={isSelected}
           />
       </div>
-      <div className="chapter__border">
+      <div className='chapter__border'>
       </div>
     </Link>
   )
@@ -135,8 +135,8 @@ function StoryComponent() {
 
   return (
     <>
-      <div className="wrapper">
-        <div className="container">
+      <div className='wrapper'>
+        <div className='container'>
           {buildChapterButton(
             1,
             animationPaths[Chapters.character],
@@ -187,7 +187,7 @@ function StoryComponent() {
           )}
           { currentChapter &&
             <div
-              className="story-chapter"
+              className='story-chapter'
               key={currentChapter}
             >
               {texts[currentChapter]}

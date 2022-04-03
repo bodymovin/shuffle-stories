@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { ActionFunction, Form, LoaderFunction, redirect, useLoaderData, json } from "remix";
-import { bodyParser } from "remix-utils";
-import ChapterButton from "~/components/selection/ChapterButton";
-import SubmitButton from "~/components/selection/SubmitButton";
-import { ChapterToContent, ChapterStrings } from "~/interfaces/chapters";
-import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from "../../helpers/animationData";
-import { Chapters } from "../../helpers/enums/chapters";
-import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from "../../helpers/story";
-import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from "../../helpers/textData";
-import { getSessionFromRequest, commitSession } from "~/sessions";
-import { getUserById, updateUser } from "~/utils/user.server";
-import StoryChapter from "~/components/selection/StoryChapter";
-import { User } from "@prisma/client";
+import { useEffect, useState } from 'react';
+import { ActionFunction, Form, LoaderFunction, redirect, useLoaderData, json } from 'remix';
+import { bodyParser } from 'remix-utils';
+import ChapterButton from '~/components/selection/ChapterButton';
+import SubmitButton from '~/components/selection/SubmitButton';
+import { ChapterToContent, ChapterStrings } from '~/interfaces/chapters';
+import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from '../../helpers/animationData';
+import { Chapters } from '../../helpers/enums/chapters';
+import { getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory } from '../../helpers/story';
+import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from '../../helpers/textData';
+import { getSessionFromRequest, commitSession } from '~/sessions';
+import { getUserById, updateUser } from '~/utils/user.server';
+import StoryChapter from '~/components/selection/StoryChapter';
+import { User } from '@prisma/client';
 
 const getChapterFromRequest = (request: Request): ChapterStrings => {
   const urlData = new URL(request.url)
@@ -215,11 +215,11 @@ function View() {
                 disabled={currentStoryIndex <= 0}
               >
                 <svg
-                    viewBox="0 0 54.01 106.02"
+                    viewBox='0 0 54.01 106.02'
                     className='story__navigation__icon story__navigation__icon--flipped'
                   >
                   <polyline
-                    points="1,1 53.01,53.01 1,105.02"
+                    points='1,1 53.01,53.01 1,105.02'
                   />
                 </svg>
               </button>
@@ -249,11 +249,11 @@ function View() {
                 disabled={currentStoryIndex >= stories.length - 1}
               >
                 <svg
-                    viewBox="0 0 54.01 106.02"
+                    viewBox='0 0 54.01 106.02'
                     className='story__navigation__icon'
                   >
                   <polyline
-                    points="1,1 53.01,53.01 1,105.02"
+                    points='1,1 53.01,53.01 1,105.02'
                   />
                 </svg>
               </button>

@@ -1,6 +1,6 @@
 import Lottie from '~/components/Lottie';
-import { useLoaderData, useNavigate } from "remix";
-import type { LoaderFunction } from "remix";
+import { useLoaderData, useNavigate } from 'remix';
+import type { LoaderFunction } from 'remix';
 import { loadAnimation } from '~/helpers/animationData';
 
 

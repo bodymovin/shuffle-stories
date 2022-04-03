@@ -1,5 +1,5 @@
-import { ChapterStrings } from "~/interfaces/chapters"
-import { ChapterNavigation } from "~/routes/selection/$"
+import { ChapterStrings } from '~/interfaces/chapters'
+import { ChapterNavigation } from '~/routes/selection/$'
 import SubmitButton from './SubmitButton'
 
 export interface ChapterButtonProps {

@@ -1,4 +1,4 @@
-import { ChapterStrings, ChapterToContent } from "~/interfaces/chapters"
+import { ChapterStrings, ChapterToContent } from '~/interfaces/chapters'
 
 const chapterTitles: ChapterToContent = {
   character: 'The Adventurer',
