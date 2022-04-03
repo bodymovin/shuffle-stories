@@ -1,10 +1,12 @@
+import { Chapter, Story } from "@prisma/client";
 import { Link, LoaderFunction, useLoaderData, useLocation } from "remix";
-import LottieComponent from "~/components/Lottie";
 import StoryVignette from "~/components/story/StoryVignette";
+import { getUserPrefsFromRequest } from "~/cookies";
 import { Chapters } from "~/helpers/enums/chapters";
 import { createSVG } from "~/helpers/svgToString";
 import { ChapterStrings, ChapterToContent } from "~/interfaces/chapters";
 import styles from "~/styles/story.css";
+import { findStories, StoryWithChapters } from "~/utils/stories.server";
 
 const getChapterFromPath = (path: string): ChapterStrings | null => {
   
@@ -20,28 +22,70 @@ const getChapterFromPath = (path: string): ChapterStrings | null => {
 interface UserStoryData {
   posters: ChapterToContent
   animationPaths: ChapterToContent
+  texts: ChapterToContent
+}
+
+interface StoriesDictInterface {
+  [key: string]: StoryWithChapters,
+}
+
+const findStoryChapter = (story: StoryWithChapters, chapterType: Chapters): Chapter => {
+  return story.chapters.find(chapter => chapter.type === chapterType)!
 }
 
 export const loader: LoaderFunction = async ({request}):Promise<UserStoryData> => {
+
+  const userPrefs = await getUserPrefsFromRequest(request)
+
+  const storiesSet = new Set()
+  storiesSet.add(userPrefs.character)
+  storiesSet.add(userPrefs.partner)
+  storiesSet.add(userPrefs.object)
+  storiesSet.add(userPrefs.vehicle)
+  storiesSet.add(userPrefs.path)
+  storiesSet.add(userPrefs.destination)
+
+  // console.log(userPrefs)
+  const storyValueIterator = storiesSet.values()
+  const storyIds: string[] = Array.from(storyValueIterator) as string[]
+  const stories = await findStories(storyIds)
+  console.log(stories[0].chapters);
+  const storiesDict: StoriesDictInterface = stories.reduce((dict: any, story) => {
+    dict[story.id] = story
+    return dict
+  }, {})
+
+  // TODO: decide what to do if there is no stories still attached to the user
+  const defaultStoryId = stories[0].id
+
   const posters: ChapterToContent = {
-    [Chapters.character]: await createSVG('/assets/story/1/character.svg'),
-    [Chapters.partner]: await createSVG('/assets/story/1/partner.svg'),
-    [Chapters.object]: await createSVG('/assets/story/1/object.svg'),
-    [Chapters.vehicle]: await createSVG('/assets/story/1/vehicle.svg'),
-    [Chapters.path]: await createSVG('/assets/story/1/path.svg'),
-    [Chapters.destination]: await createSVG('/assets/story/1/destination.svg'),
+    [Chapters.character]: await createSVG(`${storiesDict[userPrefs.character || defaultStoryId].path}character.svg`),
+    [Chapters.partner]: await createSVG(`${storiesDict[userPrefs.partner || defaultStoryId].path}partner.svg`),
+    [Chapters.object]: await createSVG(`${storiesDict[userPrefs.object || defaultStoryId].path}object.svg`),
+    [Chapters.vehicle]: await createSVG(`${storiesDict[userPrefs.vehicle || defaultStoryId].path}vehicle.svg`),
+    [Chapters.path]: await createSVG(`${storiesDict[userPrefs.path || defaultStoryId].path}path.svg`),
+    [Chapters.destination]: await createSVG(`${storiesDict[userPrefs.destination || defaultStoryId].path}destination.svg`),
   }
   const animationPaths: ChapterToContent = {
-    [Chapters.character]: '/routed/assets/story/1/character_highlight.json',
-    [Chapters.partner]: '/routed/assets/story/1/partner_highlight.json',
-    [Chapters.object]: '/routed/assets/story/1/object_highlight.json',
-    [Chapters.vehicle]: '/routed/assets/story/1/vehicle_highlight.json',
-    [Chapters.path]: '/routed/assets/story/1/path_highlight.json',
-    [Chapters.destination]: '/routed/assets/story/1/destination_highlight.json',
+    [Chapters.character]: `/routed${storiesDict[userPrefs.character || defaultStoryId].path}character_highlight.json`,
+    [Chapters.partner]: `/routed${storiesDict[userPrefs.partner || defaultStoryId].path}partner_highlight.json`,
+    [Chapters.object]: `/routed${storiesDict[userPrefs.object || defaultStoryId].path}object_highlight.json`,
+    [Chapters.vehicle]: `/routed${storiesDict[userPrefs.vehicle || defaultStoryId].path}vehicle_highlight.json`,
+    [Chapters.path]: `/routed${storiesDict[userPrefs.path || defaultStoryId].path}path_highlight.json`,
+    [Chapters.destination]: `/routed${storiesDict[userPrefs.destination || defaultStoryId].path}destination_highlight.json`,
+  }
+  const texts: ChapterToContent = {
+    [Chapters.character]: findStoryChapter(storiesDict[userPrefs.character || defaultStoryId], Chapters.character).text,
+    [Chapters.partner]: findStoryChapter(storiesDict[userPrefs.partner || defaultStoryId], Chapters.partner).text,
+    [Chapters.object]: findStoryChapter(storiesDict[userPrefs.object || defaultStoryId], Chapters.object).text,
+    [Chapters.vehicle]: findStoryChapter(storiesDict[userPrefs.vehicle || defaultStoryId], Chapters.vehicle).text,
+    [Chapters.path]: findStoryChapter(storiesDict[userPrefs.path || defaultStoryId], Chapters.path).text,
+    [Chapters.destination]: findStoryChapter(storiesDict[userPrefs.destination || defaultStoryId], Chapters.destination).text,
   }
   return {
     posters,
     animationPaths,
+    texts,
   }
 }
 
@@ -84,10 +128,11 @@ function buildChapterButton(
   )
 }
 
-function Story() {
+function StoryComponent() {
   const location = useLocation()
   const currentChapter = getChapterFromPath(location.pathname)
-  const {posters, animationPaths} = useLoaderData<UserStoryData>()
+  const {posters, animationPaths, texts} = useLoaderData<UserStoryData>()
+
   return (
     <>
       <div className="wrapper">
@@ -140,9 +185,17 @@ function Story() {
             !!currentChapter,
             posters[Chapters.destination],
           )}
+          { currentChapter &&
+            <div
+              className="story-chapter"
+              key={currentChapter}
+            >
+              {texts[currentChapter]}
+            </div>
+          }
         </div>
       </div>
     </>
   )
 }
-export default Story
+export default StoryComponent

@@ -77,10 +77,11 @@ function StoryChapter(props: StoryChapterProps) {
                 className='story__container__lock__content'
               >
                 <figure
-                  className='story__container__lock__content__figure anim-color-1'
+                  className='story__container__lock__content__figure'
                 >
                   <InlineSVG
                     content={lockIconContent}
+                    className={'anim-color-1'}
                   />
                 </figure>
                 <caption

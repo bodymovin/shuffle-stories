@@ -17,7 +17,7 @@ model Story {
   path      String @db.VarChar(255) @unique
   order     Float @default(0)
   free      Boolean
-  Chapter   Chapter[]
+  chapters   Chapter[]
 }
 
 model Chapter {

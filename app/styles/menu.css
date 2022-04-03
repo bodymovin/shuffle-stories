@@ -4,6 +4,7 @@
   left: 0;
   height: 100%;
   width: 0;
+  z-index: 10;
 }
 
 .menu__slider {
