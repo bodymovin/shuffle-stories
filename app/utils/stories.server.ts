@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Story } from '@prisma/client';
 import { db } from './db.server';
 
 // 1: Define a type that includes the relation to `Chapters`
@@ -19,4 +19,18 @@ export const findStories = async (storyIds: string[]): Promise<StoryWithChapters
     },
   });
   return stories;
+};
+
+export const findFirstFreeStory = async (): Promise<Story | null> => {
+  const story = await db.story.findFirst({
+    where: {
+      free: true,
+    },
+    orderBy: [
+      {
+        order: 'asc',
+      },
+    ],
+  });
+  return story;
 };

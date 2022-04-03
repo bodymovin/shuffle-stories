@@ -8,7 +8,7 @@ import { Chapters } from '~/helpers/enums/chapters';
 import { createSVG } from '~/helpers/svgToString';
 import { ChapterStrings, ChapterToContent } from '~/interfaces/chapters';
 import styles from '~/styles/story.css';
-import { findStories, StoryWithChapters } from '~/utils/stories.server';
+import { findFirstFreeStory, findStories, StoryWithChapters } from '~/utils/stories.server';
 
 const getChapterFromPath = (path: string): ChapterStrings | null => {
   const partParts = path.split('/');
@@ -37,14 +37,18 @@ const findStoryChapter = (story: StoryWithChapters, chapterType: Chapters): Chap
 
 export const loader: LoaderFunction = async ({ request }):Promise<UserStoryData> => {
   const userPrefs = await getUserPrefsFromRequest(request);
+  const defaultStory = await findFirstFreeStory();
+  if (!defaultStory) {
+    throw new Error('There are no stories?! What?!!');
+  }
 
   const storiesSet = new Set();
-  storiesSet.add(userPrefs.character);
-  storiesSet.add(userPrefs.partner);
-  storiesSet.add(userPrefs.object);
-  storiesSet.add(userPrefs.vehicle);
-  storiesSet.add(userPrefs.path);
-  storiesSet.add(userPrefs.destination);
+  storiesSet.add(userPrefs.character || defaultStory.id);
+  storiesSet.add(userPrefs.partner || defaultStory.id);
+  storiesSet.add(userPrefs.object || defaultStory.id);
+  storiesSet.add(userPrefs.vehicle || defaultStory.id);
+  storiesSet.add(userPrefs.path || defaultStory.id);
+  storiesSet.add(userPrefs.destination || defaultStory.id);
 
   // console.log(userPrefs)
   const storyValueIterator = storiesSet.values();
