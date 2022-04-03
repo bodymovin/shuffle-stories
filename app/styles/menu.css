@@ -140,12 +140,39 @@
   height: calc(var(--grid-unit) * 4);
   display: flex;
   align-items: stretch;
+  background: rgba(0,0,0,0.35);
+  margin: calc(var(--grid-unit) * 1) 0;
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.75);
 }
 
 .palette__button__color {
   display: inline-block;
   margin: calc(var(--grid-unit)*0.5);
   flex: 1 1 auto;
-  border: 1px solid #353535;
-  outline: 1px solid #FFEBD5;
+}
+
+.login {
+  margin: calc(var(--grid-unit) * 4) 0;
+  padding: calc(var(--grid-unit) * 1) 0;
+  text-decoration: none;
+  display: inline-block;
+  background: var(--color-3);
+  width: 100%;
+  text-align: center;
+  color: var(--color-1);
+}
+
+.logout {
+  width: 100%;
+  margin: calc(var(--grid-unit) * 4) 0;
+  text-align: center;
+}
+
+.logout__button {
+  width: 100%;
+  color: var(--color-1);
+  cursor: pointer;
+  padding: calc(var(--grid-unit) * 1) 0;
+  background: var(--color-3);
 }

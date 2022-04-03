@@ -7,7 +7,7 @@ import ChapterButton from '~/components/selection/ChapterButton';
 import SubmitButton from '~/components/selection/SubmitButton';
 import { ChapterToContent, ChapterStrings, ChapterNavigation } from '~/interfaces/chapters';
 import { User } from '@prisma/client';
-import { createAnonymousUserFromRequest, getUserById, updateUser } from '~/utils/user.server';
+import { createAnonymousUserFromRequest, getUser, getUserById, updateUser } from '~/utils/user.server';
 import { getSessionFromRequest, commitSession } from '~/sessions';
 import StoryChapter from '~/components/selection/StoryChapter';
 import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from '../../helpers/animationData';
@@ -41,14 +41,7 @@ export interface SelectionUserData {
 
 export const loader: LoaderFunction = async ({ request }):Promise<any> => {
   const session = await getSessionFromRequest(request);
-  const userId = session.get('userId');
-  let user: User | null = null;
-  if (userId) {
-    user = await getUserById(userId);
-  } else {
-    // Anonymous user
-    user = await createAnonymousUserFromRequest(request);
-  }
+  const user = await getUser(request);
   //
   const chapter = getChapterFromRequest(request);
   const stories = await getStories();

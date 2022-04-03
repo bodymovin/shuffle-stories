@@ -16,6 +16,8 @@ import lottieStyles from '~/styles/lottie.css';
 import { getColorsFromCookie } from './helpers/colorParser';
 import { ColorSet } from './interfaces/colors';
 import Menu from './components/menu/Menu';
+import { User } from '@prisma/client';
+import { getUser } from './utils/user.server';
 
 export const meta: MetaFunction = () => ({ title: 'Shuffle Stories' });
 
@@ -29,16 +31,18 @@ export const links: LinksFunction = () => (
 
 interface UserData {
   colors: ColorSet
+  user: User
 }
 
-export const loader: LoaderFunction = async ({request}):Promise<UserData> => (
+export const loader: LoaderFunction = async ({ request }):Promise<UserData> => (
   {
     colors: await getColorsFromCookie(request),
+    user: await getUser(request),
   }
 );
 
 export default function App() {
-  const { colors } = useLoaderData<UserData>();
+  const { colors, user } = useLoaderData<UserData>();
   if (typeof document !== 'undefined') {
     const root = document.documentElement;
     root.style.setProperty('--color-1', colors.color1);
@@ -56,7 +60,10 @@ export default function App() {
       </head>
       <body>
         <Outlet />
-        <Menu colors={colors} />
+        <Menu
+          colors={colors}
+          user={user}
+        />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

@@ -91,3 +91,16 @@ export const createAnonymousUserFromRequest = async (request: Request): Promise<
   };
   return user;
 };
+
+export const getUser = async (request: Request): Promise<User> => {
+  const session = await getSessionFromRequest(request);
+  const userId = session.get('userId');
+  let user: User | null = null;
+  if (userId) {
+    user = await getUserById(userId);
+  }
+  if (!user) {
+    user = await createAnonymousUserFromRequest(request);
+  }
+  return user;
+};

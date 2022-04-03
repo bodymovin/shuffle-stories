@@ -1,5 +1,10 @@
-import { useFetcher } from 'remix';
+import { User } from '@prisma/client';
+import { Link, useFetcher } from 'remix';
 import { ColorSet } from '~/interfaces/colors';
+
+interface MenuInterface {
+  user: User
+}
 
 function buildStyle(color: string) {
   return {
@@ -85,8 +90,24 @@ function buildClipPath() {
   return rects;
 }
 
-function Menu() {
+function buildLoginForm(user: User) {
+  if (user.id === 'Anonymous') {
+    return (
+      <Link to="/login" className="login">Login</Link>
+    );
+  }
+  return (
+    <form action="/logout" method="post" className="logout">
+      <button type="submit" className="logout__button">
+        Logout
+      </button>
+    </form>
+  );
+}
+
+function Menu(props: MenuInterface) {
   const fetcher = useFetcher();
+  const { user } = props;
 
   return (
     <aside className="menu">
@@ -97,12 +118,10 @@ function Menu() {
           <li>
             {buildPalettePicker(fetcher)}
           </li>
+          <li>
+            {buildLoginForm(user)}
+          </li>
         </ul>
-        <form action="/logout" method="post">
-          <button type="submit" className="button">
-            Logout
-          </button>
-        </form>
       </div>
       <label
         className="menu-button"
