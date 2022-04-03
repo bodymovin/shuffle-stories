@@ -11,8 +11,8 @@ export function links() {
   ];
 }
 
-export const loader: LoaderFunction = async ({request}): Promise<any> => {
-  const serializedCookie = await updateUserPrefs(request, {visitedSplash: true});
+export const loader: LoaderFunction = async ({ request }): Promise<any> => {
+  const serializedCookie = await updateUserPrefs(request, { visitedSplash: true });
   return json({
     ok: true,
   }, {

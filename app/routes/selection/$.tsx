@@ -7,7 +7,7 @@ import ChapterButton from '~/components/selection/ChapterButton';
 import SubmitButton from '~/components/selection/SubmitButton';
 import { ChapterToContent, ChapterStrings, ChapterNavigation } from '~/interfaces/chapters';
 import { User } from '@prisma/client';
-import { getUserById, updateUser } from '~/utils/user.server';
+import { createAnonymousUserFromRequest, getUserById, updateUser } from '~/utils/user.server';
 import { getSessionFromRequest, commitSession } from '~/sessions';
 import StoryChapter from '~/components/selection/StoryChapter';
 import { getSelectionChapterButtons, getSelectionChapterAnimationForStory, getSelectionChapterPathForStory } from '../../helpers/animationData';
@@ -16,6 +16,7 @@ import {
   getStories, getUserStoryForChapterFromRequest, SelectionStory, setUserStory,
 } from '../../helpers/story';
 import { getSelectionSubTitleByChapter, getSelectionTitleByChapter } from '../../helpers/textData';
+import { getUserPrefsFromRequest, updateUserPrefs, UserPrefs } from '~/cookies';
 
 const getChapterFromRequest = (request: Request): ChapterStrings => {
   const urlData = new URL(request.url);
@@ -45,8 +46,8 @@ export const loader: LoaderFunction = async ({ request }):Promise<any> => {
   if (userId) {
     user = await getUserById(userId);
   } else {
-    // TODO: login
-    session.set('userId', 'd511e7f3-b3af-4d81-bd03-66a9ee016e0d');
+    // Anonymous user
+    user = await createAnonymousUserFromRequest(request);
   }
   //
   const chapter = getChapterFromRequest(request);
@@ -86,13 +87,15 @@ export const action: ActionFunction = async ({ request }) => {
   const body: any = await bodyParser.toJSON(request);
   // eslint-disable-next-line no-undef
   const headers: HeadersInit = {};
+  const userPrefs: UserPrefs = await getUserPrefsFromRequest(request);
   if (body.story) {
     const chapter = getChapterFromRequest(request);
-    const storyChapter = {
-      [chapter]: body.story,
-    };
-    const serializedCookie = await setUserStory(storyChapter, request);
-    headers['Set-Cookie'] = serializedCookie;
+    // const storyChapter = {
+    //   [chapter]: body.story,
+    // };
+    userPrefs[chapter] = body.story;
+    // const serializedCookie = await setUserStory(storyChapter, request);
+    // headers['Set-Cookie'] = serializedCookie;
   }
   if (body.toStory) {
     const session = await getSessionFromRequest(request);
@@ -103,8 +106,13 @@ export const action: ActionFunction = async ({ request }) => {
         user.games += 1;
         await updateUser(user);
       }
+    } else {
+      userPrefs.games = userPrefs.games ? userPrefs.games + 1 : 1;
     }
   }
+  // TODO: review if it makes sense avoid updating the cookie when not needed
+  const serializedCookie = await updateUserPrefs(request, userPrefs);
+  headers['Set-Cookie'] = serializedCookie;
   const redirectPath = body.redirect ? `selection/${body.redirect}` : 'story';
   return redirect(redirectPath, {
     headers,

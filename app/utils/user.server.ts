@@ -1,6 +1,7 @@
 import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { redirect } from 'remix';
+import { getUserPrefsFromRequest } from '~/cookies';
 import { destroySession, getSessionFromRequest } from '~/sessions';
 import { db } from './db.server';
 import { hash, validate } from './password.server';
@@ -77,4 +78,16 @@ export async function logout(request: Request) {
       'Set-Cookie': await destroySession(session),
     },
   });
+}
+
+export const createAnonymousUserFromRequest = async (request: Request): Promise<User> => {
+  const userPrefs = await getUserPrefsFromRequest(request);
+  const user: User = {
+    id: 'Anonymous',
+    email: '',
+    name: '',
+    password: '',
+    games: userPrefs.games || 0,
+  };
+  return user;
 };

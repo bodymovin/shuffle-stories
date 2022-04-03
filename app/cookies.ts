@@ -11,6 +11,7 @@ export interface UserPrefs {
   vehicle?: string
   path?: string
   destination?: string
+  games?: number
 }
 
 export const userPrefs = createCookie('user-prefs', {
